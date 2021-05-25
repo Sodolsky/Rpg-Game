@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
-    <script async defer src="app.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="grid">
@@ -31,16 +32,20 @@
 <div class="dol1"></div>
 <div class="dol2"><div class="fight-grid"><img src="img/Heart.svg" class="obrazkistats"><span class="hp1"></span> <img src="img/Miecze.png" class="obrazkistats"><span class="atak1"></span></div>
 <div class="inventory">
+<div class="inventory-slots" id="inventory-slot0"></div>
 <div class="inventory-slots" id="inventory-slot1"></div>
 <div class="inventory-slots" id="inventory-slot2"></div>
 <div class="inventory-slots" id="inventory-slot3"></div>
 <div class="inventory-slots" id="inventory-slot4"></div>
-<div class="inventory-slots" id="inventory-slot5"></div> 
 </div>
 </div>
 <div class="dol3"></div>
 </div>
 <button id="walka">Walka</button>
 <button id="reset">Reset</button>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/flatted@3.1.1/min.js"></script>
+<script src="scripts/app.js" async defer></script>
 </body>
 </html>

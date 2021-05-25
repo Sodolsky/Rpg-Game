@@ -1,3 +1,7 @@
+//const { followCursor } = require("tippy.js");
+//const { default: tippy } = require("tippy.js")
+//const Flatted = require("flatted");
+//const Flatted = require("flatted");
 let firstplayer=false;
 const fightgrid=document.querySelectorAll('.fight-grid');
 const obrazki=document.querySelectorAll('.obrazki');
@@ -5,7 +9,12 @@ let FirstHP=document.querySelector('.hp1');
 let FirstATK=document.querySelector('.atak1');
 let SecondHP=document.querySelector('.hp2');
 let SecondATK=document.querySelector('.atak2');
+let tytuły=[['Tępy','Moczymordy','Obszczymura','Denata','Parobka','Zjeba'],
+['Ostry','Rzezimieszka','Twojego taty','Syna koleżanki twojej starej','Rycerza','Kamila Z'],
+['Epicki','Syna Kowala','Księcia','Odkrywcy','Korisa','Twojego Wujka'],
+['Legendarny','Kasteta THC','Smoka','Diabła','Korisa Starego','Jarka Lichwaly'],]
 let NrPerFloor=0;
+let instance;
 let wearing=document.querySelectorAll('.sloty');
 const walkaButton=document.querySelector('#walka');
 let loot=['img/swords1.png','img/swords2.png','img/swords3.png'];
@@ -18,7 +27,6 @@ function generateRandomNumber(min, max) {
 }
 function setURL(styleof,geticon){
 return styleof.style.backgroundImage="url("+geticon+")"
-inventoryslots[i].style.backgroundImage="url("+bronie[bronie.length-1].icon+")";;
 }
 function wylosujloot(){
 let index=Math.floor(Math.random()*3);
@@ -39,26 +47,51 @@ this.hp=randhp;
 }    
 }
 function Miecz(){
+let rand=generateRandomNumber(1,5);
 this.losowa=generateRandomNumber(1,100);
 let index=Math.floor(Math.random()*3);
 this.identyfikator=NrPerFloor;
 this.icon=loot[index];
 if(this.losowa<65){
 this.atak=generateRandomNumber(1,5);
-this.rarity="Common";    
+this.rarity="Common"; 
+this.kolor="gray";
+this.penis=function(){
+console.log(this.atak);    
+}
+this.title=`${tytuły[0][0]} miecz ${tytuły[0][rand]}`  
 }
 else if(this.losowa>=65&&this.losowa<=95){
 this.atak=generateRandomNumber(6,9)
 this.rarity="Rare";
+this.kolor="blue";
+this.title=`${tytuły[1][0]} miecz ${tytuły[1][rand]}`    
 }
 else if(this.losowa>95&&this.losowa<100){
 this.atak=generateRandomNumber(9,12)
 this.rarity="Epic";
+this.kolor="purple";
+this.title=`${tytuły[2][0]} miecz ${tytuły[2][rand]}`   
 }
 else if(this.losowa===100){
 this.atak=generateRandomNumber(12,16);
 this.rarity="Legendary";
+this.kolor="orange";
+this.title=`${tytuły[3][0]} miecz ${tytuły[3][rand]}`    
 }
+this.nazwa=this.identyfikator;
+this.opis=function(parent){
+    this.nazwa=tippy(parent,{
+        theme:'informacja',
+        allowHTML:true,
+        content:`
+        ${this.title}<br>
+        Atak: ${this.atak}<br>
+        Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+        `,})}
+        this.usunopis=function(){
+        this.nazwa.destroy();
+}   
 }
 function walka(u1,u2){ // Fight
 obrazki[0].style.display='none';
@@ -83,7 +116,10 @@ bronie.push(new Miecz());
         if(equipment[i]===false){
             setURL(inventoryslots[i],bronie[bronie.length-1].icon)
             inventoryslots[i].przypisane=bronie[bronie.length-1];
+            inventoryslots[i].przypisane.opis(inventoryslots[i]);
+            console.log(inventoryslots[i].przypisane)
             equipment[i]=true;
+            //test();
             break;    
         }
 }
@@ -98,15 +134,47 @@ FirstATK.innerHTML=`Atak:${u1.atak}`;
 SecondATK.innerHTML=`Atak:${u2.atak}`;
 save();
 }
+let ftime=false;
 function save(){ // Saves the game
 let save ={
 hp1:gracz.hp,
-hp2:currentMonster.hp,    
+hp2:currentMonster.hp,
 }
+let eq=zapiszeq();
+if(inventoryslots[0].przypisane!=undefined){
+    ftime=true;
+    localStorage.setItem('ftime',ftime);    
+}
+localStorage.setItem('eqsave',Flatted.stringify(eq));
 localStorage.setItem('save',JSON.stringify(save));    
 }
 function load(){ // Loades the game
 let savedstate=JSON.parse(localStorage.getItem('save'));
+ftime=localStorage.getItem('ftime');
+if(ftime){
+var savedeq=Flatted.parse(localStorage.getItem('eqsave'));
+}
+if(savedeq!=undefined){
+    for (let i=0;i<savedeq.length;i++){
+    inventoryslots[i].przypisane=savedeq[i];
+    setURL(inventoryslots[i],inventoryslots[i].przypisane.icon);
+    inventoryslots[i].przypisane.opis=function(parent){
+        this.nazwa=tippy(parent,{
+            theme:'informacja',
+            allowHTML:true,
+            content:`
+            ${this.title}<br>
+            Atak: ${this.atak}<br>
+            Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+            `,})}
+            inventoryslots[i].przypisane.usunopis=function(){
+                this.nazwa.destroy();
+        }   
+        equipment[i]=true;
+        console.log(equipment);
+            inventoryslots[i].przypisane.opis(inventoryslots[i]);
+    }
+}
 fightgrid[0].style.opacity="0";
 fightgrid[1].style.opacity="0";
 if (savedstate!=null&&savedstate!=undefined){
@@ -137,22 +205,29 @@ for (let i=0;i<inventoryslots.length;i++){
 inventoryslots[i].addEventListener('click',()=>{
 if(inventoryslots[i].przypisane!=undefined){
     if(inventoryslots[i].przypisane!=undefined&&wearing[0].przypisane!=undefined){
-    console.log(inventoryslots[i].przypisane.atak,wearing[0].przypisane.atak)
     let placeholder=wearing[0].przypisane;
     gracz.atak-=wearing[0].przypisane.atak;
+    inventoryslots[i].przypisane.usunopis();
+    wearing[0].przypisane.usunopis();
     wearing[0].przypisane=inventoryslots[i].przypisane;
+    wearing[0].przypisane.opis(wearing[0]);
     setURL(wearing[0],inventoryslots[i].przypisane.icon)
     gracz.atak+=wearing[0].przypisane.atak;
     inventoryslots[i].przypisane=placeholder;
+    inventoryslots[i].przypisane.opis(inventoryslots[i]);
     setURL(inventoryslots[i],placeholder.icon)
+    //test();
     updatefightstats(gracz,currentMonster);
     }
 else{
+    inventoryslots[i].przypisane.usunopis()
     wearing[0].przypisane=inventoryslots[i].przypisane;
+    wearing[0].przypisane.opis(wearing[0]);
     setURL(wearing[0],inventoryslots[i].przypisane.icon)
     event.target.przypisane=undefined;
     event.target.style.backgroundImage="none";
     equipment[i]=false;
+    //test();
     equipitem();
     updatefightstats(gracz,currentMonster);
 }
@@ -168,19 +243,41 @@ gracz.atak+=wearing[i].przypisane.atak;
 }
 function unequiptitem(){
     for(let i=0;i<wearing.length;i++){
-    wearing[i].addEventListener('click',()=>{
+    wearing[i].addEventListener('click',()=>{ //Zamienia item tutja?
         if(wearing[i].przypisane!=undefined){
             if(equipment[i]===false){
                 setURL(inventoryslots[i],wearing[i].przypisane.icon)
+                wearing[0].przypisane.usunopis();
                 inventoryslots[i].przypisane=wearing[i].przypisane;
-                equipment[i]=true;    
+                inventoryslots[i].przypisane.opis(inventoryslots[i]);
+                equipment[i]=true;
+                //test();    
+            }
+            else if(equipment[i]===true){ 
+            let x=equipment.indexOf(false);
+            setURL(inventoryslots[x],wearing[i].przypisane.icon)
+            wearing[0].przypisane.usunopis();
+            inventoryslots[x].przypisane=wearing[i].przypisane;
+            inventoryslots[x].przypisane.opis(inventoryslots[x]);
+            equipment[x]=true;
+            //test();
             }
             gracz.atak-=wearing[i].przypisane.atak;
             updatefightstats(gracz,currentMonster)   
             event.target.przypisane=undefined;
-        event.target.style.backgroundImage="none";
+        event.target.style.backgroundImage='url("img/protest.svg")';
         }    
     })
 }
 }
-unequiptitem();    
+let empty=false;
+unequiptitem();
+function zapiszeq(){
+    let arrayforsave=[];
+    for (let i = 0; i < inventoryslots.length; i++) {
+    if(inventoryslots[i].przypisane!=undefined){
+    arrayforsave.push(inventoryslots[i].przypisane)
+    }
+}
+    return arrayforsave;
+};

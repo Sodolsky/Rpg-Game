@@ -6,7 +6,8 @@ body{
 background-image:url('img/background.jpg');
 background-size:cover;
 background-repeat:no-repeat;
-user-select:none; 
+user-select:none;
+font-family: 'VT323', monospace; 
 }
 .gora2
 {
@@ -88,3 +89,10 @@ background-image:url('img/chest.svg');
 {
 background-image:url('img/ring.png');
 }
+.tippy-box[data-theme~='informacja'] {
+    background-color: rgba(18, 16, 22, 0.979);
+    font-size:1.25em;
+}
+.tippy-box[data-theme~='informacja'] > .tippy-arrow::before {
+    transform: scale(0);
+  }
