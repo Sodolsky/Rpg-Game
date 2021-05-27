@@ -11,7 +11,14 @@
 </head>
 <body>
     <div class="grid">
-    <div class="gora1"></div>
+    <div class="gora1"><span class="stage">Stage: 1-1</span><br><span class="level">Level: 1</span>
+    <div class="flexballs">
+        <div class="kolka"></div>
+        <div class="kolka"></div>
+        <div class="kolka"></div>
+        <div class="kolka"></div>
+        <div class="kolka"></div>
+    </div></div>
     <div class="gora2">  
         <div class="fight-grid">
 
@@ -31,6 +38,10 @@
 </div>
 <div class="dol1"></div>
 <div class="dol2"><div class="fight-grid"><img src="img/Heart.svg" class="obrazkistats"><span class="hp1"></span> <img src="img/Miecze.png" class="obrazkistats"><span class="atak1"></span></div>
+<span class='xpvalue'>1/1000</span>
+<div id="myProgress">
+    <div id="myBar"></div>
+</div>
 <div class="inventory">
 <div class="inventory-slots" id="inventory-slot0"></div>
 <div class="inventory-slots" id="inventory-slot1"></div>
@@ -38,11 +49,13 @@
 <div class="inventory-slots" id="inventory-slot3"></div>
 <div class="inventory-slots" id="inventory-slot4"></div>
 </div>
+
 </div>
 <div class="dol3"></div>
 </div>
 <button id="walka">Walka</button>
 <button id="reset">Reset</button>
+<button id="mieczdeva">mieczdeva</button>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://unpkg.com/flatted@3.1.1/min.js"></script>

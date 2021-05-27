@@ -96,3 +96,49 @@ background-image:url('img/ring.png');
 .tippy-box[data-theme~='informacja'] > .tippy-arrow::before {
     transform: scale(0);
   }
+  #myProgress {
+    width: 100%;
+    border:2px black solid;
+    border-radius:5px;
+    background-color: rgb(107, 47, 134);
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom:0%;
+}
+#myBar {
+    width: 1%;
+    height: 15px;
+    text-align: center;
+    font-size:15px; 
+    color: white;
+    background-image:linear-gradient( to right,purple,orange);
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+.xpvalue{
+display:flex;
+justify-content:center; 
+}
+.flexballs{
+display:flex;    
+justify-content:center;
+}
+.kolka{
+width:25px;
+height:25px;
+margin-left:2%;
+border:2px solid gold;
+border-radius:50%;    
+}
+.gora1 span{
+display:flex;
+justify-content:center;
+font-size:2em;
+color:skyblue;
+}
+.stage{
+margin-bottom:-3%;    
+}
+.wypelnione{
+background-color:orange;    
+}
