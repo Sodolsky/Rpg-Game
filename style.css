@@ -94,6 +94,11 @@ background-image:url('img/defaultring.svg');
     background-color: rgba(18, 16, 22, 0.979);
     font-size:1.25em;
 }
+.tippy-box[data-theme~='informacjapotka'] {
+    background-color: rgba(18, 16, 22, 0.979);
+    font-size:1.25em;
+    text-align:center;
+}
 .tippy-box[data-theme~='informacja'] > .tippy-arrow::before {
     transform: scale(0);
   }
@@ -206,6 +211,35 @@ margin-right:2%;
 }
 .addpoint:hover{
 background-color:#04aa6d;  
+}
+.dol3{
+display:flex;
+align-items:flex-end;
+justify-content:flex-end;    
+}
+.flexicons{
+display:flex;
+justify-content:center;
+align-items:center;
+width:80%;
+cursor: pointer;
+}
+.ikonki  img{
+width:100%;
+height:100%;
+object-fit:cover;
+overflow:hidden;
+}
+.ikonki{
+border:2px var(--eqoutline) solid;
+display:flex;
+justify-content:center;
+width:70px;
+background-color:var(--eqbackground);
+}
+.healthpotion{
+background-color:rgb(183, 191, 214);
+cursor: pointer;
 }
 @media (max-width:1400px){
 .stats{

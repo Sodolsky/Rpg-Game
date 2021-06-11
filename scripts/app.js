@@ -28,6 +28,8 @@ function ChooseARandomEnemie(){
 let rand=generateRandomNumber(0,21)
 return enemiesarray[rand]; 
 }
+let turnsbeforepotion=0;
+const healingpotiondisplay=document.querySelector('.healthpotion')
 const stagedisplay=document.querySelector('.stage');
 const leveldispay=document.querySelector('.level');
 const xpvalue=document.querySelector('.xpvalue')
@@ -421,50 +423,96 @@ this.equip=function(){
             } 
         }
 })}
-function Wearslot(visualslot,item){
-this.hasitem=false;
-this.slot=visualslot;
-this.item=item;
-this.addlistenforunequip=function(){
-this.slot.addEventListener('click',()=>{
-this.unequip();
-})
+class Wearslot {
+    constructor(visualslot, item) {
+        this.hasitem = false;
+        this.slot = visualslot;
+        this.item = item;
+        this.addlistenforunequip = function () {
+            this.slot.addEventListener('click', () => {
+                this.unequip();
+            });
+        };
+        this.unequip = function () {
+            if (this.hasitem === true) {
+                for (const i of inventoryarray) {
+                    if (i.hasitem === false) {
+                        this.item.usunopis();
+                        this.hasitem = false;
+                        i.item = this.item;
+                        i.hasitem = true;
+                        i.item.opis(i.slot);
+                        setURL(i.slot, i.item.icon);
+                        switch (this.item.type) {
+                            case 'sword':
+                                event.target.style.backgroundImage = 'url("img/protest.svg")';
+                                gracz.atak -= this.item.atak;
+                                break;
+                            case 'chestplate':
+                                event.target.style.backgroundImage = 'url("img/defaultchest.svg")';
+                                gracz.hp -= this.item.hp;
+                                break;
+                            case 'ring':
+                                event.target.style.backgroundImage = 'url("img/defaultring.svg")';
+                                gracz.magia -= this.item.magia;
+                                gracz.astrologia -= this.item.astrologia;
+                                break;
+                        }
+                        updatefightstats(gracz, currentMonster);
+                        this.item = undefined;
+                        break;
+                    }
+                }
+                save();
+                updatenumbers();
+            }
+        };
+    }
 }
-this.unequip=function(){
-if(this.hasitem===true){
-    for (const i of inventoryarray) {
-    if(i.hasitem===false){
-    this.item.usunopis();
-    this.hasitem=false;
-    i.item=this.item;
-    i.hasitem=true;
-    i.item.opis(i.slot)
-    setURL(i.slot,i.item.icon);
-    switch(this.item.type){
-        case 'sword':
-            event.target.style.backgroundImage='url("img/protest.svg")';
-            gracz.atak-=this.item.atak;
-            break;
-        case 'chestplate':
-                event.target.style.backgroundImage='url("img/defaultchest.svg")';
-                gracz.hp-=this.item.hp;                
-                break;
-        case 'ring':
-            event.target.style.backgroundImage='url("img/defaultring.svg")';
-            gracz.magia-=this.item.magia;
-            gracz.astrologia-=this.item.astrologia;
-            break;
+class HealingPotion{
+    constructor(){
+        this.canheal=true;
+        console.log(this);
+        this.display=document.querySelector('.healthpotion');
+    tippy(this.display, {
+        theme: 'informacjapotka',
+        allowHTML: true,
+        content: `Healing Potion<br>
+        Heals you for 25% of your HP.
+        `,
+    });
+    this.display.addEventListener('click',this.Heal.bind(this),false)
     }
-    updatefightstats(gracz,currentMonster);
-    this.item=undefined;
-    break;
-    }
-    }
+    Heal(){
+        console.log(this.canheal) // Nwm czemu to nie dziala
+        if(this.canheal){
+        console.log('work');
+        gracz.hp+=liczmaxhp()*0.25;
+        this.canheal=false;
+        }
     save();
+    updatefightstats(gracz,currentMonster);
     updatenumbers();
+    }
+    CheckforHeal(){
+    console.log(turnsbeforepotion);
+    if(turnsbeforepotion===4){
+    this.canheal=true;
+    turnsbeforepotion=0;    
+    }  
+    }
 }
+class Shop{
+constructor(){
+this.icon=document.querySelector('.sklep');
+this.icon.addEventListener('click',this.openshop);
 }
+openshop(){
+obrazki.src='img/goldenlichwala.jpg';
+} 
 }
+const shop=new Shop();
+const Healpot=new HealingPotion();
 let slot1=new Eqslot(inventoryslots[0])
 let slot2=new Eqslot(inventoryslots[1])
 let slot3=new Eqslot(inventoryslots[2])
@@ -484,6 +532,8 @@ leveldispay.innerHTML=`Level: ${level}`;
 function walka(u1,u2){ // Fight
 fightgrid[0].style.opacity="1";
 fightgrid[1].style.opacity="1";
+if(Healpot.canheal===false){turnsbeforepotion++};
+Healpot.CheckforHeal();
 if(firstplayer===false){   
 u2.hp=u2.hp-u1.atak; // /Hits 2nd target
 red(SecondHP);
@@ -543,7 +593,7 @@ u2.generujnowego();
 }
 }
 function updatefightstats(u1,u2){ //Updates stats in the fight
-FirstHP.innerHTML=`HP:${u1.hp}`;
+FirstHP.innerHTML=`HP:${Math.floor(u1.hp)}`;
 SecondHP.innerHTML=`HP:${u2.hp}`;
 FirstATK.innerHTML=`Atak:${u1.atak}`;
 SecondATK.innerHTML=`Atak:${u2.atak}`;
@@ -553,6 +603,9 @@ let ftime=false;
 let ftimeeq=false;
 function save(){ // Saves the game
 let save ={
+healingpotioncanheal:Healpot.canheal,
+turnsbeforepotion:turnsbeforepotion,
+spendedonhealth:spendedonhealth,
 freepunkty:freepoints,
 graczatak:gracz.atak,
 graczmagia:gracz.magia,
@@ -562,6 +615,7 @@ hp2:currentMonster.hp,
 levelsaved:level,
 stagesaved:stage,
 basexp:bar.basexp,
+onhealth:spendedonhealth,
 }
 let eq=zapiszeq();
 let equbrane=zapiszubrane();
@@ -696,6 +750,9 @@ if(savedubrane!=undefined){
 fightgrid[0].style.opacity="0";
 fightgrid[1].style.opacity="0";
 if (savedstate!=null&&savedstate!=undefined){
+Healpot.canheal=savedstate.healingpotioncanheal;
+Healpot.canheal=savedstate.healingpotioncanheal;
+turnsbeforepotion=savedstate.turnsbeforepotion;
 gracz.hp=savedstate.hp1;
 currentMonster.hp=savedstate.hp2;
 bar.basexp=savedstate.basexp;
@@ -704,6 +761,8 @@ gracz.astrologia=savedstate.graczastro;
 gracz.magia=savedstate.graczmagia;
 freepoints=savedstate.freepunkty;
 level=savedstate.levelsaved;
+spendedonhealth=savedstate.onhealth;
+spendedonhealth=savedstate.spendedonhealth;
 bar.loadlevel();
 updatelevel();
 if(savedstate.stage!=undefined){
@@ -769,6 +828,7 @@ break;
 case 1:{
 dodajstatystyki[1].addEventListener('click',()=>{
 if(freepoints>0){
+    spendedonhealth++;
     gracz.hp+=10;
     updatefightstats(gracz,currentMonster);
     freepoints--;
@@ -821,14 +881,26 @@ save();
 function updatenumbers(){
     freepointsdisplay.innerHTML=`Wolne punkty: ${freepoints}`;
     bazowestatystyki[0].innerHTML=`Atak: ${gracz.atak}`
-    bazowestatystyki[1].innerHTML=`Health: ${gracz.hp}`
+    bazowestatystyki[1].innerHTML=`Health: ${Math.floor(gracz.hp)}`
     bazowestatystyki[2].innerHTML=`Magia: ${gracz.magia}`
     bazowestatystyki[3].innerHTML=`Astro: ${gracz.astrologia}`
+}
+let spendedonhealth=Number(0);
+function liczmaxhp(){
+let valueofklata;
+if(wearingarray[1].item!==undefined){
+    valueofklata=wearingarray[1].item.hp;
+    }
+else{
+valueofklata=Number(0);    
+}
+const maxhp=100+valueofklata+(spendedonhealth*10);
+return maxhp
 }
 load();
 updatenumbers();
 addbasestats();
-setInterval(() => {
+const time=setInterval(() => {
 walka(gracz,currentMonster);    
 }, 5000);
 for (const i of wearingarray) {
