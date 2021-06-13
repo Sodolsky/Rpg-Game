@@ -4,6 +4,9 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 window.addEventListener("contextmenu", e => e.preventDefault());
+setInterval(() => {
+console.log(gold.amount);
+}, 1000);
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
