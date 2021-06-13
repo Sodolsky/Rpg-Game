@@ -983,7 +983,9 @@ const maxhp=100+valueofklata+(spendedonhealth*10);
 return maxhp
 }
 load();
+if(gold.amount!=undefined){
 gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
+}
 updatenumbers();
 addbasestats();
 const fightishappening=setInterval(() => {
