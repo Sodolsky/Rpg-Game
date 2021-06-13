@@ -3,7 +3,7 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
-//window.addEventListener("contextmenu", e => e.preventDefault());
+window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
