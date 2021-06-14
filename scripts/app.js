@@ -799,6 +799,7 @@ if(savedubrane!=undefined){
                     content:`
                     ${this.title}<br>
                     Atak: ${this.atak}<br>
+                    <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                     Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
                     `,})}
             break;
@@ -810,6 +811,7 @@ if(savedubrane!=undefined){
                         content:`
                         ${this.title}<br>
                         HP: ${this.hp}<br>
+                        <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                         Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
                         `,})}
             break;
@@ -822,6 +824,7 @@ if(savedubrane!=undefined){
                         ${this.title}<br>
                         Astrologia: ${this.astrologia}<br>
                         Magia: ${this.magia}<br>
+                        <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                         Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
                         `,})}
                         break;
