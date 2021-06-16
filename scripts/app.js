@@ -510,19 +510,32 @@ class HealingPotion{
     constructor(){
         this.canheal=true;
         this.display=document.querySelector('.healthpotion');
-    tippy(this.display, {
+        this.usageinfo='Ready to use';
+        this.tippyinstance=tippy(this.display, {
         theme: 'informacjapotka',
         allowHTML: true,
         content: `Healing Potion<br>
-        Heals you for 25% of your HP.
+        Heals you for 25% of your HP.<br>
+        Can be used every 4 turns.<br>
+        Turns Left: ${this.usageinfo}
         `,
     });
     this.display.addEventListener('click',this.Heal.bind(this),false)
+    }
+    Odswiezinstancje(){
+        this.tippyinstance.setContent(`Healing Potion<br>
+        Heals you for 25% of your HP.<br>
+        Can be used every 4 turns.<br>
+        Turns Left: ${this.usageinfo}
+        `);     
     }
     Heal(){
         if(this.canheal){
         gracz.hp+=liczmaxhp()*0.25;
         this.canheal=false;
+        turnsbeforepotion=0;
+        this.usageinfo=`Turns left: ${turnsbeforepotion}`;
+        this.Odswiezinstancje();
         }
     save();
     updatefightstats(gracz,currentMonster);
@@ -530,9 +543,17 @@ class HealingPotion{
     }
     CheckforHeal(){
     if(turnsbeforepotion===4){
+    this.usageinfo='Ready to use';
     this.canheal=true;
-    turnsbeforepotion=0;    
-    }  
+    this.Odswiezinstancje();
+    }
+    else if(turnsbeforepotion===0&&this.canheal){
+        this.Odswiezinstancje();
+    }
+    else {
+        this.usageinfo=`Turns left: ${turnsbeforepotion}`;
+        this.Odswiezinstancje();    
+    } 
     }
 }
 class Shopslot{
@@ -563,7 +584,7 @@ const cointoss=generateRandomNumber(1,3);
 switch (cointoss){
     case 1:
             this.items.push(new Miecz);
-            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
+            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1])); 
             break;
     case 2:
             this.items.push(new Chestplate);
@@ -591,9 +612,7 @@ if(this.isopen===false){
     setTimeout(() => { // ! Asynchronicznie musi wywolac to gowno bo inaczej window object staje sie sraka
         this.CloseShop();  
     }, 100);
-    for (const i of inventoryarray) {
-        i.SellItems();
-    }
+    inventoryarray.forEach(item=>item.SellItems())
 }
 }
 CloseShopFunction(){
@@ -1006,7 +1025,8 @@ valueofklata=Number(0);
 const maxhp=100+valueofklata+(spendedonhealth*10);
 return maxhp
 }
-load();
+load(); 
+Healpot.CheckforHeal();
 if(gold.amount!=undefined){
 gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
 }
