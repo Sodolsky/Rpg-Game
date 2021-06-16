@@ -1,3 +1,4 @@
+//TODO Dodac kupywanie w sklepie | Dodac zapisywanie aktualnej ilosci expa
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
@@ -979,14 +980,10 @@ break;
 }
 function checkforpoint(){
     if(freepoints<=0){
-        for (let i of dodajstatystyki) {
-        i.disabled=true;
-}
+        dodajstatystyki.forEach(item=>item.disabled=true)
 }
 else{
-for (const i of dodajstatystyki) {
-i.disabled=false;   
-}
+dodajstatystyki.forEach(item=>item.disabled)
 }
 save();
 }
@@ -1018,6 +1015,4 @@ addbasestats();
 const fightishappening=setInterval(() => {
 walka(gracz,currentMonster);    
 }, 5000);
-for (const i of wearingarray) {
-    i.addlistenforunequip();
-    } 
+wearingarray.forEach(item=>item.addlistenforunequip())
