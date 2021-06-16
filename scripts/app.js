@@ -4,9 +4,6 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 window.addEventListener("contextmenu", e => e.preventDefault());
-setInterval(() => {
-console.log(gold.amount);
-}, 1000);
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -450,13 +447,15 @@ class Eqslot {
     }
     SellItems(){
     this.slot.addEventListener('contextmenu',()=>{
-        this.item.usunopis();
-        this.hasitem=false;
-        event.target.style.backgroundImage='none';
-        gold.amount+=this.item.price;
-        gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
-        delete this.item;
-        save();
+        if(shop.isopen&&this.hasitem){
+            this.item.usunopis();
+            this.hasitem=false;
+            event.target.style.backgroundImage='none';
+            gold.amount+=this.item.price;
+            gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
+            delete this.item;
+            save();
+        }
     })  //Stad trza ruszyc    
     }
 }
@@ -578,7 +577,6 @@ let inx=this.items.length-1;
 setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
 this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
 }
-console.log(this.shopslotarray);
 }
 }
 openshop(){
@@ -589,9 +587,32 @@ if(this.isopen===false){
     obrazki.src='img/rpgshop.gif';
     obrazki.style.marginBottom="3%"
     document.querySelector('main').classList.add('zmientlo');
+    setTimeout(() => { // ! Asynchronicznie musi wywolac to gowno bo inaczej window object staje sie sraka
+        this.CloseShop();  
+    }, 100);
     for (const i of inventoryarray) {
         i.SellItems();
     }
+}
+}
+CloseShopFunction(){
+    const blokwalki=document.querySelector('main');
+    if(event.target!==blokwalki){
+        document.querySelector('.sklep').style.display='none';
+        obrazki.style.marginBottom="0%"
+        obrazki.src=ChooseARandomEnemie();
+        shop.isopen=false;
+        blokwalki.classList.remove('zmientlo');
+        shop.CloseShop();
+        window.removeEventListener('click',this.CloseShopFunction)
+        }  
+}
+CloseShop(){
+if(this.isopen){
+window.addEventListener('click',this.CloseShopFunction)
+}
+else{
+window.removeEventListener('click',this.CloseShopFunction)
 }
 } 
 }
