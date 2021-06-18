@@ -1,10 +1,10 @@
-//TODO Dodac kupywanie w sklepie | Dodac zapisywanie aktualnej ilosci expa
+//TODO Dodac zapiswanie sklepu | Dodac zapisywanie aktualnej ilosci expa
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
-window.addEventListener("contextmenu", e => e.preventDefault());
+//window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -168,14 +168,14 @@ function ProgressBar() {
     }, 1000);    
 }
 let bar=new ProgressBar();
-/////////Bronie
 class Miecz {
     constructor() {
         let rand = generateRandomNumber(1, 5);
-        this.losowa = generateRandomNumber(1, 100);
         this.type='sword';
         this.identyfikator = NrPerFloor;
         this.icon = wylosujlootsword();
+        this.wylosujstatystyki=function(MIN,MAX){
+            this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
             this.atak = generateRandomNumber(1, 5);
             this.price= generateRandomNumber(11,20);
@@ -204,6 +204,7 @@ class Miecz {
             this.kolor = "orange";
             this.title = `${tytułymiecz[3][0]} miecz ${tytułymiecz[3][rand]}`;
         }
+    }
         this.nazwa = this.identyfikator;
         this.opis = function (parent) {
             this.nazwa = tippy(parent, {
@@ -226,9 +227,10 @@ class Chestplate {
     constructor() {
         let rand = generateRandomNumber(1, 5);
         this.type='chestplate';
-        this.losowa = generateRandomNumber(1, 100);
         this.identyfikator = NrPerFloor;
         this.icon = wylosujlootchestplate();
+        this.wylosujstatystyki=function(MIN,MAX){
+            this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
             this.hp = generateRandomNumber(5, 30);
             this.price= generateRandomNumber(11,20);
@@ -257,6 +259,7 @@ class Chestplate {
             this.kolor = "orange";
             this.title = `${tytułyzbroja[3][0]} napiersnik ${tytułyzbroja[3][rand]}`;
         }
+    }
         this.nazwa = this.identyfikator; // Moze byc blad
         this.opis = function (parent) {
             this.nazwa = tippy(parent, {
@@ -279,9 +282,10 @@ class Ring {
     constructor() {
         let rand = generateRandomNumber(1, 5);
         this.type='ring';
-        this.losowa = generateRandomNumber(1, 100);
         this.identyfikator = NrPerFloor;
         this.icon = wylosujlootring();
+        this.wylosujstatystyki=function(MIN,MAX){
+        this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
             this.astrologia = generateRandomNumber(5,15);
             this.magia = generateRandomNumber(5,15);
@@ -314,6 +318,7 @@ class Ring {
             this.kolor = "orange";
             this.title = `${tytułyring[3][0]} pierscien ${tytułyring[3][rand]}`;
         }
+    }
         this.nazwa = this.identyfikator; // Moze byc blad
         this.opis = function (parent) {
             this.nazwa = tippy(parent, {
@@ -332,6 +337,7 @@ class Ring {
             this.nazwa.destroy();
         };
     }
+    
 }
 class Eqslot {
     constructor(visualslot, item) {
@@ -562,13 +568,30 @@ this.hasitem=false;
 this.icon=visualslot;
 this.item=item;
 this.icon.addEventListener('click',()=>{
-if(gold.amount>=this.item.price){
-//tu konczymy
+if(gold.amount>=this.item.price){ //! Zmieniono na mniejsze napraw later on
+for (const i of inventoryarray) {
+console.log(i);
+if(i.hasitem===false){
+gold.amount-=this.item.price;
+gold.display.innerHTML=`${gold.amount} Yangow`;
+this.hasitem=false;
+i.hasitem=true;
+i.item=this.item;
+this.item.usunopis();
+setURL(i.slot,this.item.icon)
+this.icon.style.backgroundImage='none';
+i.item.price=Math.floor(i.item.price/3)
+i.item.opis(i.slot)
+this.item=undefined;
+zapiszeq();
+save();
+break;
+}   
 }
-})
 }
-
 }
+)}}
+console.log(inventoryarray)
 class Shop{
 constructor(){
 this.icon=document.querySelector('.sklepicon');
@@ -584,7 +607,7 @@ const cointoss=generateRandomNumber(1,3);
 switch (cointoss){
     case 1:
             this.items.push(new Miecz);
-            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1])); 
+            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
             break;
     case 2:
             this.items.push(new Chestplate);
@@ -597,6 +620,9 @@ switch (cointoss){
 }
 let inx=this.items.length-1;
 setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
+this.shopslotarray[inx].item.wylosujstatystyki(65,100);
+this.shopslotarray[inx].item.price*=3;
+this.shopslotarray[inx].hasitem=true;
 this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
 }
 }
@@ -609,7 +635,7 @@ if(this.isopen===false){
     obrazki.src='img/rpgshop.gif';
     obrazki.style.marginBottom="3%"
     document.querySelector('main').classList.add('zmientlo');
-    setTimeout(() => { // ! Asynchronicznie musi wywolac to gowno bo inaczej window object staje sie sraka
+    setTimeout(() => { // ? Asynchronicznie musi wywolac to gowno bo inaczej window object staje sie sraka
         this.CloseShop();  
     }, 100);
     inventoryarray.forEach(item=>item.SellItems())
@@ -709,6 +735,7 @@ case 3:
 for(let i=0;i<inventoryarray.length;i++){
 if(inventoryarray[i].hasitem===false){
             setURL(inventoryarray[i].slot,bronie[bronie.length-1].icon)
+            bronie[bronie.length-1].wylosujstatystyki(1,100);
             inventoryarray[i].item=bronie[bronie.length-1];
             inventoryarray[i].item.opis(inventoryarray[i].slot);
             inventoryarray[i].hasitem=true;
@@ -941,6 +968,11 @@ function zapiszubrane(){
 }
     return arrayforsaveubrane;
 };
+ /*function zapiszsklep(){
+    shop.shopslotarray.map(item=>{
+    return item.hasitem===false;
+    })
+}; */ 
 function addbasestats(){
 checkforpoint();
 for (let i=0; i < dodajstatystyki.length; i++){
