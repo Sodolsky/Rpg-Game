@@ -4,7 +4,7 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
-//window.addEventListener("contextmenu", e => e.preventDefault());
+window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -573,7 +573,7 @@ for (const i of inventoryarray) {
 console.log(i);
 if(i.hasitem===false){
 gold.amount-=this.item.price;
-gold.display.innerHTML=`${gold.amount} Yangow`;
+gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
 this.hasitem=false;
 i.hasitem=true;
 i.item=this.item;
