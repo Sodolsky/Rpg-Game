@@ -1,0 +1,22 @@
+{
+  "name": "moduly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sodolsky/Rpg-Game.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sodolsky/Rpg-Game/issues"
+  },
+  "homepage": "https://github.com/Sodolsky/Rpg-Game#readme",
+  "dependencies": {
+    "flatted": "^3.1.1"
+  }
+}

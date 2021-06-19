@@ -2,9 +2,7 @@
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
-//const Flatted = require("flatted");
-//const Flatted = require("flatted");
-window.addEventListener("contextmenu", e => e.preventDefault());
+//window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -17,6 +15,8 @@ amount:Number(0),
 const freepointsdisplay=document.querySelector('.wolnepkt');
 const bazowestatystyki=document.querySelectorAll('.statynr');
 const dodajstatystyki=document.querySelectorAll('.addpoint');
+const RefreshShop=document.querySelector('.refreshshopwrapper')
+const RefreshShopButton=document.querySelector('.odswiezsklep')
 let itemicons=document.querySelectorAll('.sklepitem');
 let magia=5;
 let astrologia=5;
@@ -50,11 +50,11 @@ const SecondATK=document.querySelector('.atak2');
 const kulki=document.querySelectorAll('.kolka');
 let inventoryarray=[];
 let wearingarray=[];
-let tytułymiecz=[['Tępy','Moczymordy','Obszczymura','Denata','Parobka','Zjeba','Orła Jabola'],
+const tytułymiecz=[['Tępy','Moczymordy','Obszczymura','Denata','Parobka','Zjeba','Orła Jabola'],
 ['Ostry','Rzezimieszka','Twojego taty','Syna koleżanki twojej starej','Rycerza','Kamila Z','Blowjobsa'],
 ['Epicki','Syna Kowala','Księcia','Odkrywcy','Korisa','Twojego Wujka','Miśka z nadarzyna'],
 ['Legendarny','Kasteta THC','Smoka','Diabła','Korisa Starego','Jarka Lichwaly','Tadka z Firmy'],]
-let tytułyzbroja=[['Stary','Moczymordy','Obszczymura','Denata','Parobka','Zjeba','Orła Jabola'],
+const tytułyzbroja=[['Stary','Moczymordy','Obszczymura','Denata','Parobka','Zjeba','Orła Jabola'],
 ['Utwardzony','Rzezimieszka','Twojego taty','Syna koleżanki twojej starej','Rycerza','Kamila Z','Blowjobsa'],
 ['Epicki','Syna Kowala','Księcia','Odkrywcy','Korisa','Twojego Wujka','Miśka z nadarzyna'],
 ['Legendarny','Kasteta THC','Smoka','Diabła','Korisa Starego','Jarka Lichwaly','Tadka z Firmy'],]
@@ -568,9 +568,9 @@ this.hasitem=false;
 this.icon=visualslot;
 this.item=item;
 this.icon.addEventListener('click',()=>{
+if(this.hasitem){
 if(gold.amount>=this.item.price){ //! Zmieniono na mniejsze napraw later on
 for (const i of inventoryarray) {
-console.log(i);
 if(i.hasitem===false){
 gold.amount-=this.item.price;
 gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
@@ -590,8 +590,8 @@ break;
 }
 }
 }
+}
 )}}
-console.log(inventoryarray)
 class Shop{
 constructor(){
 this.icon=document.querySelector('.sklepicon');
@@ -621,7 +621,7 @@ switch (cointoss){
 let inx=this.items.length-1;
 setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
 this.shopslotarray[inx].item.wylosujstatystyki(65,100);
-this.shopslotarray[inx].item.price*=3;
+this.shopslotarray[inx].item.price*=2;
 this.shopslotarray[inx].hasitem=true;
 this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
 }
@@ -634,6 +634,9 @@ if(this.isopen===false){
     this.grid.style.display='flex';
     obrazki.src='img/rpgshop.gif';
     obrazki.style.marginBottom="3%"
+    RefreshShop.style.display='flex';
+    RefreshShopButton.addEventListener('click',this.RefreshShopForGold);
+    fightgrid[1].style.opacity=0;
     document.querySelector('main').classList.add('zmientlo');
     setTimeout(() => { // ? Asynchronicznie musi wywolac to gowno bo inaczej window object staje sie sraka
         this.CloseShop();  
@@ -649,6 +652,8 @@ CloseShopFunction(){
         obrazki.src=ChooseARandomEnemie();
         shop.isopen=false;
         blokwalki.classList.remove('zmientlo');
+        RefreshShop.style.display='none';
+        fightgrid[1].style.display='flex';
         shop.CloseShop();
         window.removeEventListener('click',this.CloseShopFunction)
         }  
@@ -660,7 +665,27 @@ window.addEventListener('click',this.CloseShopFunction)
 else{
 window.removeEventListener('click',this.CloseShopFunction)
 }
+}
+RefreshShopForGold(){
+if(gold.amount>=50){
+gold.amount-=50;
+gold.display.innerHTML=gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
+shop.SwapOutItems(); 
+}
 } 
+SwapOutItems(){
+this.shopslotarray.forEach(iteminarray=>{
+if(iteminarray.hasitem){
+iteminarray.hasitem=false;
+iteminarray.item.usunopis();
+iteminarray.icon.style.backgroundImage='none';
+delete iteminarray.item 
+}  
+})
+this.shopslotarray.length=0;
+this.items.length=0;
+this.additems();
+}
 }
 const shop=new Shop();
 shop.additems();
@@ -1068,3 +1093,13 @@ const fightishappening=setInterval(() => {
 walka(gracz,currentMonster);    
 }, 5000);
 wearingarray.forEach(item=>item.addlistenforunequip())
+ /*function testuj(){
+for (let i=0;i<9999;i++){
+let elemenent=new Ring;
+elemenent.wylosujstatystyki(1,100);
+if(elemenent.price===undefined){
+console.log(elemenent);
+}
+}    
+}
+testuj(); */
