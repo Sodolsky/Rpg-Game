@@ -2,6 +2,9 @@
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
+//const Flatted = require("flatted");
+//const Flatted = require("flatted");
+//const Flatted = require("flatted");
 //window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
@@ -584,6 +587,7 @@ i.item.price=Math.floor(i.item.price/3)
 i.item.opis(i.slot)
 this.item=undefined;
 zapiszeq();
+shop.Saveshop();
 save();
 break;
 }   
@@ -599,34 +603,42 @@ this.grid=document.querySelector('.sklep');
 this.items=new Array();
 this.shopslotarray=new Array();
 this.isopen=false;
+this.firstGenerate=localStorage.getItem('firstGenerateItems') ?? false;
+console.log(this.firstGenerate);
+if(this.firstGenerate===false){
+this.additems();
+this.Saveshop();
+localStorage.setItem('firstGenerateItems',this.firstGenerate);
+this.firstGenerate=false;    
+}
 this.grid.style.display='none';
 this.icon.addEventListener('click',this.openshop.bind(this));
-this.additems=function(){
-for(const i of itemicons){
-const cointoss=generateRandomNumber(1,3);
-switch (cointoss){
-    case 1:
-            this.items.push(new Miecz);
-            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
-            break;
-    case 2:
-            this.items.push(new Chestplate);
-            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
-            break;
-    case 3:
-            this.items.push(new Ring);
-            this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
-            break;
 }
-let inx=this.items.length-1;
-setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
-this.shopslotarray[inx].item.wylosujstatystyki(65,100);
-this.shopslotarray[inx].item.price*=2;
-this.shopslotarray[inx].hasitem=true;
-this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
-}
-}
-}
+additems(){
+    for(const i of itemicons){
+    const cointoss=generateRandomNumber(1,3);
+    switch (cointoss){
+        case 1:
+                this.items.push(new Miecz);
+                this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
+                break;
+        case 2:
+                this.items.push(new Chestplate);
+                this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
+                break;
+        case 3:
+                this.items.push(new Ring);
+                this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
+                break;
+    }
+    let inx=this.items.length-1;
+    setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
+    this.shopslotarray[inx].item.wylosujstatystyki(65,100);
+    this.shopslotarray[inx].item.price*=2;
+    this.shopslotarray[inx].hasitem=true;
+    this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
+    }
+    }
 openshop(){
 if(this.isopen===false){
     this.isopen=true;
@@ -644,9 +656,24 @@ if(this.isopen===false){
     inventoryarray.forEach(item=>item.SellItems())
 }
 }
-CloseShopFunction(){
+CloseShopFunction(event){
     const blokwalki=document.querySelector('main');
-    if(event.target!==blokwalki){
+    const dzieci=shop.grid.children;
+    console.log(event.target);
+    if(event.target!==RefreshShopButton
+        &&event.target!==blokwalki
+        &&event.target!==dzieci[0]
+        &&event.target!==dzieci[1]
+        &&event.target!==dzieci[2]
+        &&event.target!==dzieci[3]
+        &&event.target!==dzieci[4]
+        &&event.target!==dzieci[5]
+        &&event.target!==dzieci[6]
+        &&event.target!==dzieci[7]
+        &&event.target!==dzieci[8]
+        &&event.target!==dzieci[9]
+        ){
+        console.log(dzieci.parentElement)
         document.querySelector('.sklep').style.display='none';
         obrazki.style.marginBottom="0%"
         obrazki.src=ChooseARandomEnemie();
@@ -686,9 +713,17 @@ this.shopslotarray.length=0;
 this.items.length=0;
 this.additems();
 }
+Saveshop(){
+let shoparrayforsave=this.shopslotarray.filter(item=>{
+return item.hasitem===true;    
+})
+localStorage.setItem('shopsave',Flatted.stringify(shoparrayforsave));
+}
+checkForItemsInTheStore(){
+    
+}
 }
 const shop=new Shop();
-shop.additems();
 const Healpot=new HealingPotion();
 let slot1=new Eqslot(inventoryslots[0])
 let slot2=new Eqslot(inventoryslots[1])
@@ -770,6 +805,8 @@ if(inventoryarray[i].hasitem===false){
 u2.generujnowego();   
 }
 }
+let ftime=false;
+let ftimeeq=false;
 function updatefightstats(u1,u2){ //Updates stats in the fight
 FirstHP.innerHTML=`HP:${Math.floor(u1.hp)}`;
 SecondHP.innerHTML=`HP:${u2.hp}`;
@@ -777,8 +814,6 @@ FirstATK.innerHTML=`Atak:${u1.atak}`;
 SecondATK.innerHTML=`Atak:${u2.atak}`;
 save();
 }
-let ftime=false;
-let ftimeeq=false;
 function save(){ // Saves the game
 let save ={
 gold:gold.amount,
@@ -928,9 +963,60 @@ if(savedubrane!=undefined){
                 updatefightstats(gracz,currentMonster)
                 wearingarray[inx].hasitem=true;
                 wearingarray[inx].item.opis(wearing[inx]);
-        }    
+        }
+    }
 }
+let savedshop=Flatted.parse(localStorage.getItem('shopsave'));
+savedshop.forEach((item,counter=0)=>{
+shop.shopslotarray.push(new Shopslot(itemicons[counter],item.item))
+setURL(itemicons[counter],item.item.icon)
+shop.shopslotarray[counter].hasitem=true;
+switch(shop.shopslotarray[counter].item.type){
+    case 'sword':    
+    shop.shopslotarray[counter].item.opis=function(parent){
+        this.nazwa=tippy(parent,{ // Tu bedzie bug
+            theme:'informacja',
+            allowHTML:true,
+            content:`
+            ${this.title}<br>
+            Atak: ${this.atak}<br>
+            <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+            Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+            `,})}
+    break;
+    case 'chestplate':
+        shop.shopslotarray[counter].item.opis=function(parent){
+            this.nazwa=tippy(parent,{ // Tu bedzie bug
+                theme:'informacja',
+                allowHTML:true,
+                content:`
+                ${this.title}<br>
+                HP: ${this.hp}<br>
+                <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                `,})}
+    break;
+    case 'ring':
+        shop.shopslotarray[counter].item.opis=function(parent){
+            this.nazwa=tippy(parent,{ // Tu bedzie bug
+                theme:'informacja',
+                allowHTML:true,
+                content:`
+                ${this.title}<br>
+                Astrologia: ${this.astrologia}<br>
+                Magia: ${this.magia}<br>
+                <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                `,})}
+                break;
+    }
+shop.shopslotarray[counter].item.usunopis=function(){
+        this.nazwa.destroy();
 }
+shop.shopslotarray[counter].item.opis(itemicons[counter])
+counter++;
+})
+console.log(shop.shopslotarray)
 fightgrid[0].style.opacity="0";
 fightgrid[1].style.opacity="0";
 if (savedstate!=null&&savedstate!=undefined){
@@ -993,11 +1079,6 @@ function zapiszubrane(){
 }
     return arrayforsaveubrane;
 };
- /*function zapiszsklep(){
-    shop.shopslotarray.map(item=>{
-    return item.hasitem===false;
-    })
-}; */ 
 function addbasestats(){
 checkforpoint();
 for (let i=0; i < dodajstatystyki.length; i++){
