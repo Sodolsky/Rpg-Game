@@ -99,16 +99,25 @@ this.hp=hp;
 this.astrologia=astrologia;
 this.magia=magia;
 }
-function Monster(atak,hp){
-this.atak=atak;
-this.hp=hp;
-this.generujnowego=function(){
-    const randatak=Math.floor(Math.random()*5)+1;    
-    const randhp=Math.floor(Math.random()*30)+10;
-this.atak=randatak;
-this.hp=randhp;
-obrazki.src=ChooseARandomEnemie();   
-}    
+class Monster {
+    constructor(atak, hp) {
+        this.atak = atak;
+        this.hp = hp;
+    }
+    generujnowego(){
+        const randatak=generateRandomNumber(12,20)    
+        const randhp=generateRandomNumber(65,100);
+    this.atak=randatak;
+    this.hp=randhp;
+    obrazki.src=ChooseARandomEnemie();   
+    }
+    generujbossa(){
+        const randatak=generateRandomNumber(30,35)    
+        const randhp=generateRandomNumber(200,250);
+        this.atak=randatak;
+        this.hp=randhp;
+        obrazki.src=ChooseARandomEnemie();    
+    }
 }
 function ProgressBar() {
     let i = 0;
@@ -604,12 +613,12 @@ this.items=new Array();
 this.shopslotarray=new Array();
 this.isopen=false;
 this.firstGenerate=localStorage.getItem('firstGenerateItems') ?? false;
-console.log(this.firstGenerate);
 if(this.firstGenerate===false){
+console.log('tu');
 this.additems();
 this.Saveshop();
+this.firstGenerate=true;    
 localStorage.setItem('firstGenerateItems',this.firstGenerate);
-this.firstGenerate=false;    
 }
 this.grid.style.display='none';
 this.icon.addEventListener('click',this.openshop.bind(this));
@@ -642,7 +651,6 @@ additems(){
 openshop(){
 if(this.isopen===false){
     this.isopen=true;
-    clearInterval(fightishappening);
     this.grid.style.display='flex';
     obrazki.src='img/rpgshop.gif';
     obrazki.style.marginBottom="3%"
@@ -673,7 +681,6 @@ CloseShopFunction(event){
         &&event.target!==dzieci[8]
         &&event.target!==dzieci[9]
         ){
-        console.log(dzieci.parentElement)
         document.querySelector('.sklep').style.display='none';
         obrazki.style.marginBottom="0%"
         obrazki.src=ChooseARandomEnemie();
@@ -699,28 +706,28 @@ gold.amount-=50;
 gold.display.innerHTML=gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
 shop.SwapOutItems(); 
 }
-} 
+}
 SwapOutItems(){
-this.shopslotarray.forEach(iteminarray=>{
+    console.log(this.shopslotarray);
+    this.shopslotarray.forEach(iteminarray=>{
 if(iteminarray.hasitem){
 iteminarray.hasitem=false;
 iteminarray.item.usunopis();
 iteminarray.icon.style.backgroundImage='none';
 delete iteminarray.item 
-}  
+}
 })
 this.shopslotarray.length=0;
 this.items.length=0;
+console.log(this.shopslotarray);  
 this.additems();
+this.Saveshop();
 }
 Saveshop(){
 let shoparrayforsave=this.shopslotarray.filter(item=>{
 return item.hasitem===true;    
 })
 localStorage.setItem('shopsave',Flatted.stringify(shoparrayforsave));
-}
-checkForItemsInTheStore(){
-    
 }
 }
 const shop=new Shop();
@@ -757,6 +764,11 @@ u1.hp=u1.hp-u2.atak;
 red(FirstHP); // Hits 1st target
 updatefightstats(u1,u2)
 firstplayer=false;
+}
+if(gracz.hp<=0){
+alert('Game over :(');
+localStorage.clear();
+window.location.reload();    
 }
 if(currentMonster.hp<=0){
 bar.gainedxp=true;
@@ -848,6 +860,7 @@ function load(){ // Loades the game
 let savedstate=JSON.parse(localStorage.getItem('save'));
 ftime=localStorage.getItem('ftime');
 ftimeeq=localStorage.getItem('ftimeeq');
+obrazki.src=ChooseARandomEnemie();
 if(ftime){
 var savedeq=Flatted.parse(localStorage.getItem('eqsave'));
 }
@@ -966,57 +979,58 @@ if(savedubrane!=undefined){
         }
     }
 }
+if(shop.firstGenerate==='true'){
 let savedshop=Flatted.parse(localStorage.getItem('shopsave'));
 savedshop.forEach((item,counter=0)=>{
-shop.shopslotarray.push(new Shopslot(itemicons[counter],item.item))
-setURL(itemicons[counter],item.item.icon)
-shop.shopslotarray[counter].hasitem=true;
-switch(shop.shopslotarray[counter].item.type){
-    case 'sword':    
-    shop.shopslotarray[counter].item.opis=function(parent){
-        this.nazwa=tippy(parent,{ // Tu bedzie bug
-            theme:'informacja',
-            allowHTML:true,
-            content:`
-            ${this.title}<br>
-            Atak: ${this.atak}<br>
-            <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
-            Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
-            `,})}
-    break;
-    case 'chestplate':
+    shop.shopslotarray.push(new Shopslot(itemicons[counter],item.item))
+    setURL(itemicons[counter],item.item.icon)
+    shop.shopslotarray[counter].hasitem=true;
+    switch(shop.shopslotarray[counter].item.type){
+        case 'sword':    
         shop.shopslotarray[counter].item.opis=function(parent){
             this.nazwa=tippy(parent,{ // Tu bedzie bug
                 theme:'informacja',
                 allowHTML:true,
                 content:`
                 ${this.title}<br>
-                HP: ${this.hp}<br>
+                Atak: ${this.atak}<br>
                 <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                 Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
                 `,})}
-    break;
-    case 'ring':
-        shop.shopslotarray[counter].item.opis=function(parent){
-            this.nazwa=tippy(parent,{ // Tu bedzie bug
-                theme:'informacja',
-                allowHTML:true,
-                content:`
-                ${this.title}<br>
-                Astrologia: ${this.astrologia}<br>
-                Magia: ${this.magia}<br>
-                <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
-                Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
-                `,})}
-                break;
+        break;
+        case 'chestplate':
+            shop.shopslotarray[counter].item.opis=function(parent){
+                this.nazwa=tippy(parent,{ // Tu bedzie bug
+                    theme:'informacja',
+                    allowHTML:true,
+                    content:`
+                    ${this.title}<br>
+                    HP: ${this.hp}<br>
+                    <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                    Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                    `,})}
+        break;
+        case 'ring':
+            shop.shopslotarray[counter].item.opis=function(parent){
+                this.nazwa=tippy(parent,{ // Tu bedzie bug
+                    theme:'informacja',
+                    allowHTML:true,
+                    content:`
+                    ${this.title}<br>
+                    Astrologia: ${this.astrologia}<br>
+                    Magia: ${this.magia}<br>
+                    <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                    Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                    `,})}
+                    break;
+        }
+    shop.shopslotarray[counter].item.usunopis=function(){
+            this.nazwa.destroy();
     }
-shop.shopslotarray[counter].item.usunopis=function(){
-        this.nazwa.destroy();
+    shop.shopslotarray[counter].item.opis(itemicons[counter])
+    counter++;
+    })
 }
-shop.shopslotarray[counter].item.opis(itemicons[counter])
-counter++;
-})
-console.log(shop.shopslotarray)
 fightgrid[0].style.opacity="0";
 fightgrid[1].style.opacity="0";
 if (savedstate!=null&&savedstate!=undefined){
@@ -1044,10 +1058,10 @@ updatefightstats(gracz,currentMonster)
 }
 else{
 updatefightstats(gracz,currentMonster)    
-} 
 }
+} 
 let gracz=new Player(5,100,5,5);
-let currentMonster=new Monster(3,25);
+let currentMonster=new Monster(15,80);
 walkaButton.addEventListener('click',()=>{
 walka(gracz,currentMonster) 
 })
@@ -1170,9 +1184,7 @@ gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.am
 }
 updatenumbers();
 addbasestats();
-const fightishappening=setInterval(() => {
-walka(gracz,currentMonster);    
-}, 5000);
+walka(gracz,currentMonster);
 wearingarray.forEach(item=>item.addlistenforunequip())
  /*function testuj(){
 for (let i=0;i<9999;i++){
