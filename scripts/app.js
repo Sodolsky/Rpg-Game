@@ -1,11 +1,11 @@
-//TODO Dodac zapiswanie sklepu | Dodac zapisywanie aktualnej ilosci expa
+//TODO Dodac zapisywanie aktualnej ilosci expa | Walka z bosem
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
-window.addEventListener("contextmenu", e => e.preventDefault());
+//window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -103,21 +103,45 @@ class Monster {
     constructor(atak, hp) {
         this.atak = atak;
         this.hp = hp;
+        this.bossExist=false;
     }
     generujnowego(){
-        const randatak=generateRandomNumber(12,20)    
-        const randhp=generateRandomNumber(65,100);
-    this.atak=randatak;
-    this.hp=randhp;
-    obrazki.src=ChooseARandomEnemie();   
-    }
-    generujbossa(){
-        const randatak=generateRandomNumber(30,35)    
-        const randhp=generateRandomNumber(200,250);
+        if(this.bossExist===false){
+            updatefightstats(gracz,currentMonster)
+            const randatak=generateRandomNumber(8,15)    
+            const randhp=generateRandomNumber(65,100);
         this.atak=randatak;
         this.hp=randhp;
-        obrazki.src=ChooseARandomEnemie();    
+        obrazki.src=ChooseARandomEnemie(); 
+        updatefightstats(gracz,currentMonster)  
+        }
     }
+    generujbossa(){
+        if(nroffight===6){
+            this.bossExist=true;
+            const randatak=generateRandomNumber(20,25)    
+            const randhp=generateRandomNumber(200,250);
+            this.atak=randatak;
+            this.hp=randhp;
+            updatefightstats(gracz,currentMonster)
+            kulki.forEach(item=>item.classList.add('kolorowekolka'));
+            obrazki.src='img/enemies/boss1.png'
+        }
+    }
+    wyczyscpobossie(){
+        if(this.hp<=0&&this.bossExist===true){
+            console.log('bosspokonany');
+            stage[1]++;
+            for (let i of kulki) {
+            i.classList.remove('wypelnione'); 
+            i.classList.remove('kolorowekolka');   
+            }
+            updatestage();
+            this.bossExist=false;
+            this.generujnowego();
+            nroffight=1;
+    }
+}
 }
 function ProgressBar() {
     let i = 0;
@@ -605,6 +629,8 @@ break;
 }
 }
 )}}
+let gracz=new Player(5,100,5,5);
+let currentMonster=new Monster(15,80);
 class Shop{
 constructor(){
 this.icon=document.querySelector('.sklepicon');
@@ -748,7 +774,14 @@ stagedisplay.innerHTML=`Stage: ${stage[0]}-${stage[1]}`
 function updatelevel(){
 leveldispay.innerHTML=`Level: ${level}`;
 }
+setInterval(function() {
+   console.log(nroffight);
+}, 1000);
 function walka(u1,u2){ // Fight
+if(currentMonster.hp<0){
+currentMonster.generujnowego();
+updatefightstats(u1,u2);    
+}
 fightgrid[0].style.opacity="1";
 fightgrid[1].style.opacity="1";
 if(Healpot.canheal===false){turnsbeforepotion++};
@@ -771,20 +804,17 @@ localStorage.clear();
 window.location.reload();    
 }
 if(currentMonster.hp<=0){
+updatefightstats(u1,u2)
 bar.gainedxp=true;
 for (const i of kulki) {
 if(i.classList.contains('wypelnione')){
-if(nroffight===5){
-stage[1]++;
-for (let i of kulki) {
-i.classList.remove('wypelnione');    
-}
-updatestage();
-nroffight=1;
+if(nroffight===6){
+currentMonster.wyczyscpobossie();
+currentMonster.generujbossa();
+console.log('wygenerowalo');
 break;
 }
-continue;   
-}
+} 
 else{
 nroffight++;
 i.classList.add('wypelnione');
@@ -813,7 +843,7 @@ if(inventoryarray[i].hasitem===false){
             inventoryarray[i].hasitem=true;
             break;     
         }
-} 
+}
 u2.generujnowego();   
 }
 }
@@ -1060,8 +1090,6 @@ else{
 updatefightstats(gracz,currentMonster)    
 }
 } 
-let gracz=new Player(5,100,5,5);
-let currentMonster=new Monster(15,80);
 walkaButton.addEventListener('click',()=>{
 walka(gracz,currentMonster) 
 })

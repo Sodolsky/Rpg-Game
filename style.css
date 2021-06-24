@@ -166,6 +166,19 @@ margin-bottom:-3%;
 .wypelnione{
 background-color:orange;    
 }
+.kolorowekolka{
+animation-name:KoloroweKolka;
+animation-duration:3s;
+animation-iteration-count:infinite;
+animation-direction:alternate-reverse; 
+}
+@keyframes KoloroweKolka{
+    0%   {background-color: #ffd319;}
+    25%  {background-color: #ff901f;}
+    50%  {background-color: #ff2975;}
+    75%  {background-color: #f222ff;}
+    100% {background-color: #ffd319;}
+}
 .basestats{
 height:50%;
 border-bottom:  var(--eqoutline) solid;
@@ -304,6 +317,7 @@ display: inline;
 white-space:nowrap;
 color:gold;
 }
+
 @media (max-width:1400px){
 .stats{
 width:60%;    
