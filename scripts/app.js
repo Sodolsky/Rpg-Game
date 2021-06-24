@@ -5,7 +5,7 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
-//window.addEventListener("contextmenu", e => e.preventDefault());
+window.addEventListener("contextmenu", e => e.preventDefault());
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -709,7 +709,12 @@ CloseShopFunction(event){
         ){
         document.querySelector('.sklep').style.display='none';
         obrazki.style.marginBottom="0%"
-        obrazki.src=ChooseARandomEnemie();
+        if(currentMonster.bossExist===true){
+        obrazki.src='img/enemies/boss1.png'
+        }
+        else{
+        obrazki.src=ChooseARandomEnemie();    
+        }
         shop.isopen=false;
         blokwalki.classList.remove('zmientlo');
         RefreshShop.style.display='none';
