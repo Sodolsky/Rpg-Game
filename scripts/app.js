@@ -1,4 +1,4 @@
-//TODO Dodac zapisywanie aktualnej ilosci expa | Walka z bosem
+//TODO Dodac zapisywanie aktualnej ilosci expa
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
@@ -15,6 +15,7 @@ let gold={
 display:document.querySelector('.goldamount'),
 amount:Number(0),
 }
+let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
 const bazowestatystyki=document.querySelectorAll('.statynr');
 const dodajstatystyki=document.querySelectorAll('.addpoint');
@@ -67,7 +68,6 @@ const tytułyring=[['Podniszczony','Moczymordy','Obszczymura','Denata','Parobka'
 ['Legendarny','Kasteta THC','Smoka','Diabła','Korisa Starego','Jarka Lichwaly','Tadka z Firmy'],]
 let NrPerFloor=0;
 let wearing=document.querySelectorAll('.sloty');
-const walkaButton=document.querySelector('#walka');
 const swordloot=['img/swords1.png','img/swords2.png','img/swords3.png'];
 const chestloot=['img/Body-armor.svg','img/Raseone_Armor_2.svg','img/armor.svg']
 const ringloot=['img/ring1.png','img/ring2.png','img/ring3.png']
@@ -93,12 +93,68 @@ function wylosujlootring(){
 let index=generateRandomNumber(0,2);
 return ringloot[index];
 }
-function Player(atak,hp,astrologia,magia){
-this.atak=atak;
-this.hp=hp;
-this.astrologia=astrologia;
-this.magia=magia;
+class Player {
+    constructor(atak, hp, astrologia, magia) {
+        this.atak = atak;
+        this.hp = hp;
+        this.astrologia = astrologia;
+        this.magia = magia;
+        this.MieczIkona=document.querySelector('#AtakMieczem');
+        this.MagiaIkona=document.querySelector('#AtakMagia');
+        this.AstrologiaIkona=document.querySelector('#AtakAstrologia');
+        this.AtakiDisplay=document.querySelector('.ataki');
+        this.AtakiIcons=document.querySelectorAll('.akcjawalka');
+        this.BackIcon=document.querySelector('.akcjawalkaB');
+        this.AtakiImg=document.querySelectorAll('.akcjaobrazki');
+        this.MieczIkona.addEventListener('click',this.AtakMieczem.bind(this))
+        this.MagiaIkona.addEventListener('click',this.AtakMagiczny.bind(this))
+        this.AstrologiaIkona.addEventListener('click',this.AtakAstrologia.bind(this))
+        this.MagicOrAstrologySelected=false;
+    }
+    AtakMieczem(){
+    if(this.MagicOrAstrologySelected===false){
+    walka(gracz,currentMonster);    
+    }
+    }
+    AtakMagiczny(){
+        if(this.MagicOrAstrologySelected===false){
+        this.MagicOrAstrologySelected=true;
+        this.AtakiDisplay.classList.add('showmoreoptionsMagic');
+        this.AtakiIcons.forEach(item=>FadeOutandIn(item))
+        this.AtakiImg.forEach(item=>item.src='img/yeti.png'); // ! Yeti to placeholder
+        this.BackIcon.style.display="block"; 
+        // ! JAK POPRAWNIE DODAĆ THIS DO EVENT LISTENERA
+        BackArrowCopy=this.BackArrow.bind(this);
+        this.BackIcon.addEventListener('click',BackArrowCopy,true);
+    }
+    }
+    AtakAstrologia(){
+    if(this.MagicOrAstrologySelected===false){
+    this.MagicOrAstrologySelected=true;
+    this.AtakiDisplay.classList.add('showmoreoptionsAstrology')
+    this.AtakiIcons.forEach(item=>item.classList.add('hideandshow')) 
+    this.AtakiImg.forEach(item=>item.src='img/yeti.png'); // ! Yeti to placeholder
+    this.BackIcon.style.display="block"; 
+        // ! JAK POPRAWNIE DODAĆ THIS DO EVENT LISTENERA
+        BackArrowCopy=this.BackArrow.bind(this);
+        this.BackIcon.addEventListener('click',BackArrowCopy,true);
+    }
 }
+BackArrow(){
+    this.AtakiImg[0].src='img/walkamiecz.svg';    
+    this.AtakiImg[1].src='img/magic-wand.svg';    
+    this.AtakiImg[2].src='img/alchemy.svg';
+    this.AtakiIcons.forEach(item=>FadeOutandIn(item))
+    this.BackIcon.style.display='none';
+    this.AtakiDisplay.classList.remove('showmoreoptionsAstrology');
+    this.AtakiDisplay.classList.remove('showmoreoptionsMagic');
+    this.BackIcon.removeEventListener('click',BackArrowCopy,true);
+    this.MagicOrAstrologySelected=false;
+    }
+}
+function FadeOutandIn(target){
+    target.classList.add('hideandshow')
+    setTimeout(()=>target.classList.remove('hideandshow'),1500)}
 class Monster {
     constructor(atak, hp) {
         this.atak = atak;
@@ -605,7 +661,7 @@ this.icon=visualslot;
 this.item=item;
 this.icon.addEventListener('click',()=>{
 if(this.hasitem){
-if(gold.amount>=this.item.price){ //! Zmieniono na mniejsze napraw later on
+if(gold.amount>=this.item.price){
 for (const i of inventoryarray) {
 if(i.hasitem===false){
 gold.amount-=this.item.price;
@@ -640,7 +696,6 @@ this.shopslotarray=new Array();
 this.isopen=false;
 this.firstGenerate=localStorage.getItem('firstGenerateItems') ?? false;
 if(this.firstGenerate===false){
-console.log('tu');
 this.additems();
 this.Saveshop();
 this.firstGenerate=true;    
@@ -676,6 +731,7 @@ additems(){
     }
 openshop(){
 if(this.isopen===false){
+    gracz.AtakiDisplay.style.display='none';
     this.isopen=true;
     this.grid.style.display='flex';
     obrazki.src='img/rpgshop.gif';
@@ -708,6 +764,19 @@ CloseShopFunction(event){
         &&event.target!==dzieci[9]
         ){
         document.querySelector('.sklep').style.display='none';
+        gracz.AtakiDisplay.style.display='flex';
+        if(gracz.MagicOrAstrologySelected===true){
+        gracz.AtakiDisplay.classList.remove('showmoreoptionsAstrology');   
+        gracz.AtakiDisplay.classList.remove('showmoreoptionsMagic');
+        gracz.AtakiImg[0].src='img/walkamiecz.svg';    
+        gracz.AtakiImg[1].src='img/magic-wand.svg';    
+        gracz.AtakiImg[2].src='img/alchemy.svg';
+        gracz.AtakiIcons.forEach(item=>FadeOutandIn(item))
+        gracz.BackIcon.style.display='none';
+        gracz.AtakiDisplay.classList.remove('showmoreoptionsAstrology');
+        gracz.BackIcon.removeEventListener('click',BackArrowCopy,true);
+        gracz.MagicOrAstrologySelected=false;   
+        }
         obrazki.style.marginBottom="0%"
         if(currentMonster.bossExist===true){
         obrazki.src='img/enemies/boss1.png'
@@ -718,7 +787,7 @@ CloseShopFunction(event){
         shop.isopen=false;
         blokwalki.classList.remove('zmientlo');
         RefreshShop.style.display='none';
-        fightgrid[1].style.display='flex';
+        fightgrid.forEach(item=>item.style.opacity='1');
         shop.CloseShop();
         window.removeEventListener('click',this.CloseShopFunction)
         }  
@@ -779,9 +848,6 @@ stagedisplay.innerHTML=`Stage: ${stage[0]}-${stage[1]}`
 function updatelevel(){
 leveldispay.innerHTML=`Level: ${level}`;
 }
-setInterval(function() {
-   console.log(nroffight);
-}, 1000);
 function walka(u1,u2){ // Fight
 if(currentMonster.hp<0){
 currentMonster.generujnowego();
@@ -1095,9 +1161,6 @@ else{
 updatefightstats(gracz,currentMonster)    
 }
 } 
-walkaButton.addEventListener('click',()=>{
-walka(gracz,currentMonster) 
-})
 //Reset
 document.querySelector('#reset').addEventListener('click',()=>{localStorage.clear()
 window.location.reload();

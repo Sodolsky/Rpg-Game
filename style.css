@@ -27,10 +27,6 @@ main{
     justify-content:flex-end;
     align-items:center;   
 }
-main img {
-margin-top:10%;
-width:300px;  
-}
 .refreshshopwrapper{
 display:none;   
 }
@@ -317,7 +313,98 @@ display: inline;
 white-space:nowrap;
 color:gold;
 }
-
+.ataki{
+display:flex;
+justify-content:center;
+align-items:center;
+margin-bottom:2%;
+margin-top:3%;
+width:40%;
+display:flex;
+justify-content:space-evenly;
+background-color:var(--eqbackground);
+border:3px solid var(--eqoutline);
+border-radius:0.6rem;
+padding:0.5%;
+}
+.akcjawalka{
+height:100%;
+width:15%;
+border-radius:50%;
+margin:0 2% 0 2%;
+display:flex;
+justify-content:center;
+align-items:center;
+background-color:black;
+border:2px solid var(--eqoutline);
+cursor: pointer; 
+}
+.akcjawalkaB{
+    height:80%;
+    width:10%;
+    border-radius:50%;
+    margin:0 2% 0 2%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color:black;
+    border:2px solid var(--eqoutline);
+    cursor: pointer;
+    padding:1%;
+    display:none;   
+}
+.akcjaobrazki{
+width:80%;
+height:80%;
+overflow:hidden;  
+}
+#Back{
+background-color:white;
+}
+.hideandshow{
+animation-name:HideAndShow;
+animation-fill-mode:forwards;
+animation-duration:1s;
+}
+.normalselection{
+    animation-name:NormalSelection;
+    animation-fill-mode:forwards;
+    animation-duration:1s;    
+}
+.showmoreoptionsMagic{
+animation-name:SwapOutActionIconsMagic;
+animation-duration:1s;
+animation-fill-mode:forwards;    
+}
+.showmoreoptionsAstrology{
+animation-name:SwapOutActionIconsAstrology;
+animation-duration:1s;
+animation-fill-mode:forwards;    
+}
+@keyframes SwapOutActionIconsMagic {
+from{background-color:var(--eqbackground);}
+to {background-color: #240faa;
+border-color:#240faa;
+}
+}
+@keyframes SwapOutActionIconsAstrology {
+from{background-color:var(--eqbackground);}
+to { background-color: #02a0eb;
+border-color:#02a0eb;
+}
+}
+@keyframes HideAndShow {
+from{opacity:0;}
+to{opacity:1;}
+}
+.akcjawalka:nth-child(2) > img{
+width:70%;
+height:70%;    
+}
+.obrazki{
+width:300px;
+margin-top:10%;
+}
 @media (max-width:1400px){
 .stats{
 width:60%;    
