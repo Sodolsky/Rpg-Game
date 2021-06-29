@@ -1250,7 +1250,7 @@ function checkforpoint(){
         dodajstatystyki.forEach(item=>item.disabled=true)
 }
 else{
-dodajstatystyki.forEach(item=>item.disabled)
+dodajstatystyki.forEach(item=>item.disabled=false)
 }
 save();
 }
