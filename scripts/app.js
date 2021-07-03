@@ -170,6 +170,8 @@ class Monster {
             const randhp=generateRandomNumber(65,100);
         this.atak=randatak;
         this.hp=randhp;
+        this.dzwiek=this.losujdzwiek();
+        console.log(this.dzwiek);
         obrazki.src=ChooseARandomEnemie(); 
         updatefightstats(gracz,currentMonster)  
         }
@@ -909,7 +911,7 @@ function updatelevel(){
 leveldispay.innerHTML=`Level: ${level}`;
 }
 function walka(u1,u2,type,dmg){ // Fight
-if(currentMonster.hp<0){
+if(currentMonster.hp<=0){
 currentMonster.generujnowego();
 updatefightstats(u1,u2);
 gracz.mana=gracz.magia;
@@ -930,6 +932,10 @@ if(firstplayer===false){
 }
     red(SecondHP);
     updatefightstats(u1,u2)
+    if(currentMonster.hp<=0){
+        gracz.mana=gracz.magia;
+        ManaLeftDisplay.innerHTML=`${gracz.mana} `    
+        }
     firstplayer=true;
 }
 else{
