@@ -1,4 +1,4 @@
-//TODO Dodac zapisywanie aktualnej ilosci expa
+//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie Pinowania
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
@@ -6,6 +6,7 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 window.addEventListener("contextmenu", e => e.preventDefault());
+let muted=false;
 let firstplayer=false;
 let stage=[1,1];
 let nroffight=1;
@@ -17,6 +18,7 @@ amount:Number(0),
 }
 let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
+document.querySelector('.mutebutton').addEventListener('click',muteAudio);
 const bazowestatystyki=document.querySelectorAll('.statynr');
 const dodajstatystyki=document.querySelectorAll('.addpoint');
 const RefreshShop=document.querySelector('.refreshshopwrapper')
@@ -52,6 +54,7 @@ const FirstATK=document.querySelector('.atak1');
 const SecondHP=document.querySelector('.hp2');
 const SecondATK=document.querySelector('.atak2');
 const kulki=document.querySelectorAll('.kolka');
+const ManaLeftDisplay=document.querySelector('.Mana-Left');
 let inventoryarray=[];
 let wearingarray=[];
 const tytułymiecz=[['Tępy','Moczymordy','Obszczymura','Denata','Parobka','Zjeba','Orła Jabola'],
@@ -72,7 +75,6 @@ const swordloot=['img/swords1.png','img/swords2.png','img/swords3.png'];
 const chestloot=['img/Body-armor.svg','img/Raseone_Armor_2.svg','img/armor.svg']
 const ringloot=['img/ring1.png','img/ring2.png','img/ring3.png']
 let inventoryslots=document.querySelectorAll('.inventory-slots');
-let equipment=[false,false,false,false,false];
 let equipmentweapons=[];
 let bronie=[];
 function generateRandomNumber(min, max) {
@@ -99,6 +101,7 @@ class Player {
         this.hp = hp;
         this.astrologia = astrologia;
         this.magia = magia;
+        this.mana=this.magia;
         this.MieczIkona=document.querySelector('#AtakMieczem');
         this.MagiaIkona=document.querySelector('#AtakMagia');
         this.AstrologiaIkona=document.querySelector('#AtakAstrologia');
@@ -113,7 +116,7 @@ class Player {
     }
     AtakMieczem(){
     if(this.MagicOrAstrologySelected===false){
-    walka(gracz,currentMonster);    
+    walka(gracz,currentMonster,'normal');    
     }
     }
     AtakMagiczny(){
@@ -152,14 +155,13 @@ BackArrow(){
     this.MagicOrAstrologySelected=false;
     }
 }
-function FadeOutandIn(target){
-    target.classList.add('hideandshow')
-    setTimeout(()=>target.classList.remove('hideandshow'),1500)}
 class Monster {
     constructor(atak, hp) {
         this.atak = atak;
         this.hp = hp;
         this.bossExist=false;
+        this.sounds=document.querySelectorAll('.monstersound');
+        this.dzwiek=this.losujdzwiek();
     }
     generujnowego(){
         if(this.bossExist===false){
@@ -198,7 +200,63 @@ class Monster {
             nroffight=1;
     }
 }
+    losujdzwiek(){
+        const rand = generateRandomNumber(0,2);
+        return this.sounds[rand];
+    }
 }
+let gracz=new Player(5,100,5,5);
+let currentMonster=new Monster(15,80);
+class Spell {
+    constructor(iconinmodal,cost,minimummagic,castsound){
+    this.MagicModal=document.querySelector('#MagiaModal');
+    this.icon=iconinmodal;
+    this.minimummagic=minimummagic;
+    this.cost=cost;
+    this.pinicon=this.icon.children[0].children[1];
+    this.ispinned=false;
+    this.pinicon.addEventListener('click',this.Pin)
+    this.CastSound=castsound;
+}
+    static SpellsArray=[];
+    Pin(){
+        if(this.ispinned===false){
+
+        }
+    }
+}
+class Fireball extends Spell {
+    constructor(iconinmodal,cost,minimummagic,castsound){
+        super(iconinmodal,cost,minimummagic,castsound)
+        this.CastCopy=this.Cast.bind(this);
+        Spell.SpellsArray.push(this); // Odloty.pl
+        this.icon.addEventListener('click',this.CastCopy)
+        this.dmg=10+(Math.floor(gracz.magia/2)); // Możliwy refactor
+    }
+    Cast(){
+    if(gracz.mana>=this.cost){
+        $('#MagiaModal').modal('hide');
+        gracz.mana-=this.cost;
+        ManaLeftDisplay.innerHTML=`${gracz.mana} `;
+        this.CastSound.play();
+        console.log(this.dmg);
+        walka(gracz,currentMonster,'magic',this.dmg);
+        setTimeout(function() {
+            walka(gracz,currentMonster,'magic',this.dmg);
+        }, 1000); 
+    }
+    }
+    RecalculateDmg(){
+    this.dmg=10+(Math.floor(gracz.magia/2));
+    document.querySelector('.fireballdmg').innerHTML=this.dmg;
+    console.log(this.dmg);    
+    }
+}
+const kulaognista = new Fireball(document.querySelector('#fireball'),2,5,document.querySelector('#fireboltaudio'),10);
+kulaognista.Pin();
+function FadeOutandIn(target){
+    target.classList.add('hideandshow')
+    setTimeout(()=>target.classList.remove('hideandshow'),1500)}
 function ProgressBar() {
     let i = 0;
     this.xp=1000;
@@ -452,6 +510,7 @@ class Eqslot {
                 case 'ring':
                     gracz.astrologia += this.item.astrologia;
                     gracz.magia += this.item.magia;
+                    Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
                     break;
             }
             updatefightstats(gracz, currentMonster);
@@ -474,6 +533,7 @@ class Eqslot {
                 case 'ring':
                     gracz.astrologia -= waeringslot.item.astrologia;
                     gracz.magia -= waeringslot.item.magia;
+                    Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
                     break;
             }
             this.item.usunopis();
@@ -489,6 +549,7 @@ class Eqslot {
                 case 'ring':
                     gracz.astrologia += waeringslot.item.astrologia;
                     gracz.magia += waeringslot.item.magia;
+                    Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
                     break;
             }
             waeringslot.item.opis(waeringslot.slot);
@@ -591,6 +652,7 @@ class Wearslot {
                                 event.target.style.backgroundImage = 'url("img/defaultring.svg")';
                                 gracz.magia -= this.item.magia;
                                 gracz.astrologia -= this.item.astrologia;
+                                Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
                                 break;
                         }
                         updatefightstats(gracz, currentMonster);
@@ -685,8 +747,6 @@ break;
 }
 }
 )}}
-let gracz=new Player(5,100,5,5);
-let currentMonster=new Monster(15,80);
 class Shop{
 constructor(){
 this.icon=document.querySelector('.sklepicon');
@@ -848,31 +908,44 @@ stagedisplay.innerHTML=`Stage: ${stage[0]}-${stage[1]}`
 function updatelevel(){
 leveldispay.innerHTML=`Level: ${level}`;
 }
-function walka(u1,u2){ // Fight
+function walka(u1,u2,type,dmg){ // Fight
 if(currentMonster.hp<0){
 currentMonster.generujnowego();
-updatefightstats(u1,u2);    
+updatefightstats(u1,u2);
+gracz.mana=gracz.magia;
+ManaLeftDisplay.innerHTML=`${gracz.mana} `    
 }
 fightgrid[0].style.opacity="1";
 fightgrid[1].style.opacity="1";
 if(Healpot.canheal===false){turnsbeforepotion++};
 Healpot.CheckforHeal();
-if(firstplayer===false){   
-u2.hp=u2.hp-u1.atak; // /Hits 2nd target
-red(SecondHP);
-updatefightstats(u1,u2)
-firstplayer=true;
+if(firstplayer===false){
+    switch(type){
+        case 'normal':
+        u2.hp=u2.hp-u1.atak;
+        break;
+    case 'magic':
+        u2.hp-=dmg;
+        break;
+}
+    red(SecondHP);
+    updatefightstats(u1,u2)
+    firstplayer=true;
 }
 else{
+console.log('kontruje');
+currentMonster.dzwiek.play();
 u1.hp=u1.hp-u2.atak;
 red(FirstHP); // Hits 1st target
 updatefightstats(u1,u2)
 firstplayer=false;
 }
 if(gracz.hp<=0){
-alert('Game over :(');
+document.querySelector('.gameoversound').play();
+setTimeout(function() {
 localStorage.clear();
-window.location.reload();    
+window.location.reload();  
+}, 3000);  
 }
 if(currentMonster.hp<=0){
 updatefightstats(u1,u2)
@@ -962,6 +1035,7 @@ let savedstate=JSON.parse(localStorage.getItem('save'));
 ftime=localStorage.getItem('ftime');
 ftimeeq=localStorage.getItem('ftimeeq');
 obrazki.src=ChooseARandomEnemie();
+ManaLeftDisplay.innerHTML=`${gracz.mana} `;
 if(ftime){
 var savedeq=Flatted.parse(localStorage.getItem('eqsave'));
 }
@@ -1132,8 +1206,6 @@ savedshop.forEach((item,counter=0)=>{
     counter++;
     })
 }
-fightgrid[0].style.opacity="0";
-fightgrid[1].style.opacity="0";
 if (savedstate!=null&&savedstate!=undefined){
 gold.amount=savedstate.gold;
 Healpot.canheal=savedstate.healingpotioncanheal;
@@ -1145,6 +1217,9 @@ bar.basexp=savedstate.basexp;
 gracz.atak=savedstate.graczatak;
 gracz.astrologia=savedstate.graczastro;
 gracz.magia=savedstate.graczmagia;
+gracz.mana=gracz.magia;
+Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
+ManaLeftDisplay.innerHTML=`${gracz.mana} `;
 freepoints=savedstate.freepunkty;
 level=savedstate.levelsaved;
 spendedonhealth=savedstate.spendedonhealth;
@@ -1222,6 +1297,9 @@ case 2:{
 dodajstatystyki[2].addEventListener('click',()=>{
 if(freepoints>0){
     gracz.magia+=2;
+    gracz.mana+=2;
+    Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
+    ManaLeftDisplay.innerHTML=`${gracz.mana} `;
     updatefightstats(gracz,currentMonster);
     freepoints--;
     save();
@@ -1261,6 +1339,21 @@ function updatenumbers(){
     bazowestatystyki[2].innerHTML=`Magia: ${gracz.magia}`
     bazowestatystyki[3].innerHTML=`Astro: ${gracz.astrologia}`
 }
+function muteAudio(){
+const audio=document.querySelectorAll('audio');
+audio.forEach(item=>{
+if(muted===false){
+item.pause();
+item.muted=true;
+}
+else{
+item.muted=false;    
+}
+})
+if(muted===false){muted=true;}
+else{muted=false}
+console.log(muted);
+}
 let spendedonhealth=Number(0);
 function liczmaxhp(){
 let valueofklata;
@@ -1280,7 +1373,6 @@ gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.am
 }
 updatenumbers();
 addbasestats();
-walka(gracz,currentMonster);
 wearingarray.forEach(item=>item.addlistenforunequip())
  /*function testuj(){
 for (let i=0;i<9999;i++){

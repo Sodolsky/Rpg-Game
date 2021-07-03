@@ -405,6 +405,77 @@ height:70%;
 width:300px;
 margin-top:10%;
 }
+.modal-content-astrologia{
+background-color:#02a0eb;
+}
+.modal-content-magia{
+background-color:#ffdd54;
+}
+.flexboxcenter{
+display:flex;
+justify-content:center;
+align-items:center;    
+}
+.magicspell{
+border:1px black solid;
+height:7vh;
+margin-bottom:2%;
+border-radius:6px;
+overflow:hidden;
+cursor:pointer;
+}
+.costandpin{
+display:flex;
+justify-content:space-around;
+align-items:center;
+padding:1%;
+border-bottom:2px solid;
+background-color:orange;
+font-weight:bold;
+}
+.costandpin > img{
+width:20px;
+cursor:pointer;    
+}
+.costandpin > span{
+flex-grow:2;    
+}
+.costandpin > span > img{
+width:12%;
+margin-right:4%;    
+}
+.Magicneeded{
+width:20px;
+margin-bottom:2%;   
+}
+.spellinfo{
+display:flex;
+justify-content:flex-start;
+align-items:center;
+margin-left:3%;
+margin-right:3%;
+margin-top:1.5%;
+font-weight:bold; 
+}
+.turninfo{
+    display:flex;
+    justify-content:center;
+    color:firebrick;    
+}
+.turninfo > span{
+font-size:2em;
+}
+.turninfo > span > img{
+width:8%;    
+}
+.mute{
+display: flex;
+align-items:center;    
+}
+.mutebutton{
+width:5vw;
+background-color:inherit;   
+}
 @media (max-width:1400px){
 .stats{
 width:60%;    

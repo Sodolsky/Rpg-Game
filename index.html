@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rpg Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -25,7 +26,10 @@
 
         <img src="img/Heart.svg" class="obrazkistats"><span class="hp2"></span> <img src="img/Miecze.png" class="obrazkistats"><span class="atak2"></span>
     </div> </div>
-    <div class="gora3"></div>
+    <div class="gora3">
+    <div class="turninfo"><span>Mana left: <span class="Mana-Left">5 </span><img src="img/Mana.svg" alt="Amount of mana left"></span></div>
+    <div class="mute"><button class="mutebutton"><img src="img/mute.svg" alt="Mute sounds"></button></div>
+</div>
     <div class="lewo1"><div class="stats">
         <div class="basestats">
             <span>Statystyki</span>
@@ -91,16 +95,99 @@
 
 <div class="flexicons">
     <span class="ikonki sklepicon"><img src="img/shopping-cart.svg" alt="Shop where you can bui items"></span>
-    <span class="ikonki magia"><img src="img/magic-wand.svg" alt="Magic window"></span>
-    <span class="ikonki astrologia"><img src="img/alchemy.svg" alt="Astrology window"></span>
+    <span class="ikonki magia"><img src="img/magic-wand.svg" alt="Magic window"  data-bs-toggle="modal" data-bs-target="#MagiaModal"></span>
+    <span class="ikonki astrologia"><img src="img/alchemy.svg" alt="Astrology window"  data-bs-toggle="modal" data-bs-target="#AstrologiaModal"></span>
 </div>
 </div>
 </div>
 <button id="reset">Reset</button>
+<!-- Modal Magia -->
+<div class="modal fade" id="MagiaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-content-magia">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Magia</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="magicspell" id="fireball"><div class="costandpin"><span><img src="img/Fireball.png" alt="Image of spell">Fireball </span><img src="img/pin.svg" alt="Pin img"></div>
+                        <span class="spellinfo"><span>Deals <span class="fireballdmg">10</span> dmg</span><span style="margin-left:auto; display:inline;">2 Magic<img src="img/Mana.svg" class="Magicneeded" alt="Amount of Magic needed"></span></span>
+                    </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+    </div>
+    </div>
+</div>
+<!-- Modal Astrologia -->
+<div class="modal fade" id="AstrologiaModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-content-astrologia">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Astrologia</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+    </div>
+    </div>
+</div>
+<audio src="img/Firebolt.mp3" id="fireboltaudio"></audio>
+<audio src="img/Monster1.mp3" class="monstersound"></audio>
+<audio src="img/Monster2.mp3" class="monstersound"></audio>
+<audio src="img/Monster3.mp3" class="monstersound"></audio>
+<audio src="img/wasted.mp3" class="gameoversound"></audio>
 <!--<button onclick="test()">Zmien sklep</button> -->
 <script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://unpkg.com/flatted@3.1.1/min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="scripts/app.js" async defer></script>
 </body>
 </html>
