@@ -1,4 +1,4 @@
-//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie Pinowania || Dodanie zetonow na skille do sklepu
+//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie zetonow na skille do sklepu
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
