@@ -1,4 +1,4 @@
-//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie Pinowania
+//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie Pinowania || Dodanie zetonow na skille do sklepu
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
@@ -6,6 +6,7 @@
 //const Flatted = require("flatted");
 //const Flatted = require("flatted");
 window.addEventListener("contextmenu", e => e.preventDefault());
+let fightlock=false;
 let muted=false;
 let firstplayer=false;
 let stage=[1,1];
@@ -16,13 +17,20 @@ let gold={
 display:document.querySelector('.goldamount'),
 amount:Number(0),
 }
+let mods={
+    buffmoddmg:1,
+    }
 let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
+const activebuffs=document.querySelector('.activebuffs');
 document.querySelector('.mutebutton').addEventListener('click',muteAudio);
 const bazowestatystyki=document.querySelectorAll('.statynr');
 const dodajstatystyki=document.querySelectorAll('.addpoint');
 const RefreshShop=document.querySelector('.refreshshopwrapper')
 const RefreshShopButton=document.querySelector('.odswiezsklep')
+const buffslots=document.querySelectorAll('.buff');
+const goldsound=document.querySelector('.goldsound');
+const goldsound2=document.querySelector('.goldsound2');
 let itemicons=document.querySelectorAll('.sklepitem');
 let magia=5;
 let astrologia=5;
@@ -112,11 +120,17 @@ class Player {
         this.MieczIkona.addEventListener('click',this.AtakMieczem.bind(this))
         this.MagiaIkona.addEventListener('click',this.AtakMagiczny.bind(this))
         this.AstrologiaIkona.addEventListener('click',this.AtakAstrologia.bind(this))
+        this.AtakMieczemSound=document.querySelector('.swordsound');
         this.MagicOrAstrologySelected=false;
     }
     AtakMieczem(){
     if(this.MagicOrAstrologySelected===false){
-    walka(gracz,currentMonster,'normal');    
+    walka(gracz,currentMonster,'normal');
+    this.AtakMieczemSound.play();
+    setTimeout(function() {
+        walka(gracz,currentMonster);
+    }, 1000);
+    Buff.BuffsArray.forEach(item=>item.TickBuff());    
     }
     }
     AtakMagiczny(){
@@ -171,7 +185,6 @@ class Monster {
         this.atak=randatak;
         this.hp=randhp;
         this.dzwiek=this.losujdzwiek();
-        console.log(this.dzwiek);
         obrazki.src=ChooseARandomEnemie(); 
         updatefightstats(gracz,currentMonster)  
         }
@@ -190,7 +203,6 @@ class Monster {
     }
     wyczyscpobossie(){
         if(this.hp<=0&&this.bossExist===true){
-            console.log('bosspokonany');
             stage[1]++;
             for (let i of kulki) {
             i.classList.remove('wypelnione'); 
@@ -227,6 +239,56 @@ class Spell {
         }
     }
 }
+class Buff{
+    constructor(DOMtarget,turns,description,img,exactspell){
+        this.opis = function (DOMtarget) {
+            this.nazwa = tippy(DOMtarget, {
+                theme: 'informacja',
+                allowHTML: true,
+                content: `
+        Turns Left: ${turns}<br>
+        ${description}
+        `,
+            });
+        };
+        this.exactspell=exactspell;
+        this.turnsleft=turns;
+        this.opis(DOMtarget)
+        this.description=description;
+        Buff.BuffsArray.push(this);
+        this.DOMtarget=DOMtarget;
+        DOMtarget.style.backgroundImage=setURL(DOMtarget,img)
+    }
+    static BuffsArray=[];
+    RemoveBuff(){
+        if(this.turnsleft===0){
+            this.nazwa.destroy();
+            this.DOMtarget.style.backgroundImage='';
+            Spell.SpellsArray.forEach(item=>{
+            if(item.hasOwnProperty('ownbuff')){
+            item.ownbuff=1;
+            }
+            mods.buffmoddmg=medytacja.ownbuff;
+            })
+            this.exactspell.iscasted=false;
+            Spell.SpellsArray.forEach(item=>item.RecalculateDmg());
+            this.Usun();
+        }
+        else{
+        this.nazwa.setContent(`Turns Left: ${this.turnsleft}<br>
+        ${this.description}
+        `)
+        }
+    }
+    TickBuff(){
+        this.turnsleft--;
+        this.RemoveBuff();
+    }
+    Usun(){
+    const index=Buff.BuffsArray.indexOf(this);
+    Buff.BuffsArray.splice(index,1);
+    }
+}
 class Fireball extends Spell {
     constructor(iconinmodal,cost,minimummagic,castsound){
         super(iconinmodal,cost,minimummagic,castsound)
@@ -234,27 +296,76 @@ class Fireball extends Spell {
         Spell.SpellsArray.push(this); // Odloty.pl
         this.icon.addEventListener('click',this.CastCopy)
         this.dmg=10+(Math.floor(gracz.magia/2)); // Możliwy refactor
+        document.querySelector('.fireballdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);
     }
     Cast(){
     if(gracz.mana>=this.cost){
         $('#MagiaModal').modal('hide');
+        this.RecalculateDmg();
         gracz.mana-=this.cost;
         ManaLeftDisplay.innerHTML=`${gracz.mana} `;
         this.CastSound.play();
-        console.log(this.dmg);
         walka(gracz,currentMonster,'magic',this.dmg);
         setTimeout(function() {
             walka(gracz,currentMonster,'magic',this.dmg);
-        }, 1000); 
+        }, 1000);
+        Buff.BuffsArray.forEach(item=>item.TickBuff());
     }
+    
     }
     RecalculateDmg(){
     this.dmg=10+(Math.floor(gracz.magia/2));
-    document.querySelector('.fireballdmg').innerHTML=this.dmg;
-    console.log(this.dmg);    
+    document.querySelector('.fireballdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
     }
 }
-const kulaognista = new Fireball(document.querySelector('#fireball'),2,5,document.querySelector('#fireboltaudio'),10);
+class Meditation extends Spell{
+    constructor(iconinmodal,cost,minimummagic,castsound){
+        super(iconinmodal,cost,minimummagic,castsound)
+        Spell.SpellsArray.push(this);
+        this.CastCopy=this.Cast.bind(this);
+        this.icon.addEventListener('click',this.CastCopy);
+        this.dmg=0;
+        this.img=this.icon.children[0].children[0].children[0].src;
+        this.turns=4+(Math.floor(gracz.magia/10));
+        document.querySelector('.MeditationTurns').innerHTML=` ${this.turns-1} `;
+        this.ownbuff=1;
+        this.iscasted=false;
+    }
+    Cast(){
+        if(gracz.mana>=this.cost){
+                if(this.iscasted===false){
+            $('#MagiaModal').modal('hide');
+            gracz.mana-=this.cost;
+            ManaLeftDisplay.innerHTML=` ${gracz.mana}`;
+            this.CastSound.play();
+            walka(gracz,currentMonster,'magic',this.dmg);
+            this.ownbuff=1.25;
+            mods.buffmoddmg=this.ownbuff;
+            this.AddBuff();
+            Spell.SpellsArray.forEach(item=>item.RecalculateDmg());
+            setTimeout(function() {
+                walka(gracz,currentMonster,'magic',this.dmg);
+            }, 1000); 
+            Buff.BuffsArray.forEach(item=>item.TickBuff());
+        }
+        }
+        }
+        RecalculateDmg(){
+            this.turns=4+(Math.floor(gracz.magia/10));
+            document.querySelector('.MeditationTurns').innerHTML=` ${this.turns-1}`; 
+            }
+        AddBuff(){ 
+        for (const i of buffslots) {
+            if(i.style.backgroundImage===''){
+                    this.iscasted=true;
+                    this.currentBuff=new Buff(i,this.turns,'Boosts your DMG by 25%',this.img,this)
+                    break;
+            }
+        }
+        }
+}
+const kulaognista = new Fireball(document.querySelector('#fireball'),2,5,document.querySelector('#fireboltaudio'));
+const medytacja = new Meditation(document.querySelector('#meditation'),10,10,document.querySelector('#MeditationAudio'))
 kulaognista.Pin();
 function FadeOutandIn(target){
     target.classList.add('hideandshow')
@@ -616,6 +727,7 @@ class Eqslot {
             gold.amount+=this.item.price;
             gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
             delete this.item;
+            goldsound.play();
             save();
         }
     })  //Stad trza ruszyc    
@@ -811,7 +923,6 @@ if(this.isopen===false){
 CloseShopFunction(event){
     const blokwalki=document.querySelector('main');
     const dzieci=shop.grid.children;
-    console.log(event.target);
     if(event.target!==RefreshShopButton
         &&event.target!==blokwalki
         &&event.target!==dzieci[0]
@@ -870,7 +981,6 @@ shop.SwapOutItems();
 }
 }
 SwapOutItems(){
-    console.log(this.shopslotarray);
     this.shopslotarray.forEach(iteminarray=>{
 if(iteminarray.hasitem){
 iteminarray.hasitem=false;
@@ -880,8 +990,7 @@ delete iteminarray.item
 }
 })
 this.shopslotarray.length=0;
-this.items.length=0;
-console.log(this.shopslotarray);  
+this.items.length=0;  
 this.additems();
 this.Saveshop();
 }
@@ -914,6 +1023,7 @@ function walka(u1,u2,type,dmg){ // Fight
 if(currentMonster.hp<=0){
 currentMonster.generujnowego();
 updatefightstats(u1,u2);
+addGoldAfterKillingEnemy();
 gracz.mana=gracz.magia;
 ManaLeftDisplay.innerHTML=`${gracz.mana} `    
 }
@@ -924,22 +1034,22 @@ Healpot.CheckforHeal();
 if(firstplayer===false){
     switch(type){
         case 'normal':
-        u2.hp=u2.hp-u1.atak;
+        Math.round(u2.hp-=u1.atak*mods.buffmoddmg);
         break;
     case 'magic':
-        u2.hp-=dmg;
+        Math.round(u2.hp-=dmg*mods.buffmoddmg);
         break;
 }
     red(SecondHP);
     updatefightstats(u1,u2)
     if(currentMonster.hp<=0){
+        addGoldAfterKillingEnemy();
         gracz.mana=gracz.magia;
         ManaLeftDisplay.innerHTML=`${gracz.mana} `    
         }
     firstplayer=true;
 }
 else{
-console.log('kontruje');
 currentMonster.dzwiek.play();
 u1.hp=u1.hp-u2.atak;
 red(FirstHP); // Hits 1st target
@@ -954,14 +1064,15 @@ window.location.reload();
 }, 3000);  
 }
 if(currentMonster.hp<=0){
-updatefightstats(u1,u2)
+updatefightstats(u1,u2);
+gracz.mana=gracz.magia;
+ManaLeftDisplay.innerHTML=`${gracz.mana} ` 
 bar.gainedxp=true;
 for (const i of kulki) {
 if(i.classList.contains('wypelnione')){
 if(nroffight===6){
 currentMonster.wyczyscpobossie();
 currentMonster.generujbossa();
-console.log('wygenerowalo');
 break;
 }
 } 
@@ -1000,10 +1111,10 @@ u2.generujnowego();
 let ftime=false;
 let ftimeeq=false;
 function updatefightstats(u1,u2){ //Updates stats in the fight
-FirstHP.innerHTML=`HP:${Math.floor(u1.hp)}`;
-SecondHP.innerHTML=`HP:${u2.hp}`;
-FirstATK.innerHTML=`Atak:${u1.atak}`;
-SecondATK.innerHTML=`Atak:${u2.atak}`;
+FirstHP.innerHTML=`HP:${Math.round(u1.hp)}`;
+SecondHP.innerHTML=`HP:${Math.round(u2.hp)}`;
+FirstATK.innerHTML=`Atak:${Math.round(u1.atak*mods.buffmoddmg)}`;
+SecondATK.innerHTML=`Atak:${Math.round(u2.atak)}`;
 save();
 }
 function save(){ // Saves the game
@@ -1224,7 +1335,7 @@ gracz.atak=savedstate.graczatak;
 gracz.astrologia=savedstate.graczastro;
 gracz.magia=savedstate.graczmagia;
 gracz.mana=gracz.magia;
-Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
+Spell.SpellsArray.forEach(item=>item.RecalculateDmg()) 
 ManaLeftDisplay.innerHTML=`${gracz.mana} `;
 freepoints=savedstate.freepunkty;
 level=savedstate.levelsaved;
@@ -1358,7 +1469,6 @@ item.muted=false;
 })
 if(muted===false){muted=true;}
 else{muted=false}
-console.log(muted);
 }
 let spendedonhealth=Number(0);
 function liczmaxhp(){
@@ -1372,6 +1482,12 @@ valueofklata=Number(0);
 const maxhp=100+valueofklata+(spendedonhealth*10);
 return maxhp
 }
+function addGoldAfterKillingEnemy(){
+const rand = generateRandomNumber(10,25);
+gold.amount+=rand;
+goldsound2.play();
+gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
+}
 load(); 
 Healpot.CheckforHeal();
 if(gold.amount!=undefined){
@@ -1380,13 +1496,8 @@ gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.am
 updatenumbers();
 addbasestats();
 wearingarray.forEach(item=>item.addlistenforunequip())
- /*function testuj(){
-for (let i=0;i<9999;i++){
-let elemenent=new Ring;
-elemenent.wylosujstatystyki(1,100);
-if(elemenent.price===undefined){
-console.log(elemenent);
-}
-}    
-}
-testuj(); */
+if(currentMonster.hp<=0){
+    currentMonster.generujnowego();
+    updatefightstats(gracz,currentMonster);    
+    }
+

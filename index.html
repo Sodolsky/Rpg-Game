@@ -75,7 +75,14 @@
 <div class="sloty" id="slot3"></div>   
 </div>
 </div>
-<div class="dol1"></div>
+<div class="dol1">
+<div class="activebuffs">
+<div class="buff"></div>
+<div class="buff"></div>
+<div class="buff"></div>
+<div class="buff"></div>
+</div>
+</div>
 <div class="dol2"><div class="fight-grid"><img src="img/Heart.svg" class="obrazkistats"><span class="hp1"></span> <img src="img/Miecze.png" class="obrazkistats"><span class="atak1"></span></div>
 <span class='xpvalue'>1/1000</span>
 <div id="myProgress">
@@ -118,7 +125,9 @@
                     </div>
                     </div>
                     <div class="col-sm">
-                        <div class="magicspell"><div class="costandpin"><span><img src="img/yeti.png" alt="Image of spell">Lorem, ipsum.</span><img src="img/pin.svg" alt="Pin img"></div></div>
+                        <div class="magicspell" id="meditation"><div class="costandpin"><span><img src="img/Meditation.svg" alt="Image of spell">Meditation</span><img src="img/pin.svg" alt="Pin img"></div>
+                        <span class="spellinfo"><span>Lasts<span class="MeditationTurns">4</span> Turns</span><span style="margin-left:auto; display:inline;">10 Magic<img src="img/Mana.svg" class="Magicneeded" alt="Amount of Magic needed"></span></span>
+                    </div>
                     </div>
                 </div>
                 <div class="row">
@@ -178,10 +187,14 @@
     </div>
 </div>
 <audio src="img/Firebolt.mp3" id="fireboltaudio"></audio>
+<audio src="img/Meditation.wav" id="MeditationAudio"></audio>
 <audio src="img/Monster1.mp3" class="monstersound"></audio>
 <audio src="img/Monster2.mp3" class="monstersound"></audio>
 <audio src="img/Monster3.mp3" class="monstersound"></audio>
 <audio src="img/wasted.mp3" class="gameoversound"></audio>
+<audio src="img/SwordSound.wav" class="swordsound"></audio>
+<audio src="img/gold.mp3" class="goldsound"></audio>
+<audio src="img/gold2.mp3" class="goldsound2"></audio>
 <!--<button onclick="test()">Zmien sklep</button> -->
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

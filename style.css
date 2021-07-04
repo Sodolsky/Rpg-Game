@@ -206,7 +206,7 @@ margin-left:2%;
 .stats{
 height:100%;
 width:40%;
-font-size:1.5em;
+font-size:1.25em;
 color:goldenrod;
 background-color:var(--eqbackground);
 border:4px var(--eqoutline) solid;  
@@ -475,6 +475,30 @@ align-items:center;
 .mutebutton{
 width:5vw;
 background-color:inherit;   
+}
+.dol1{
+display:flex;
+justify-content:flex-start;
+flex-direction:column;
+align-items:flex-start; 
+}
+.activebuffs{
+display:flex;
+flex-direction:column;
+background-color:var(--eqbackground);
+border:2px solid var(--eqoutline);
+height:100%;
+width:10%;
+margin-bottom:2%;
+margin-top:3%;    
+}
+.buff{
+height:25%;
+width:100%;
+background-repeat:no-repeat;
+background-size:contain;
+background-position:center;
+border-bottom:4px solid var(--eqoutline);
 }
 @media (max-width:1400px){
 .stats{
