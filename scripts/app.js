@@ -21,8 +21,9 @@ let mods={
     buffmoddmg:1,
     enemymodhp:1,
     enemymodatak:1,
-    eqmod:1,
+    eqmod:stage[1]/10,
     }
+console.log('fst');
 let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
 const activebuffs=document.querySelector('.activebuffs');
@@ -1080,7 +1081,6 @@ let ringslot=new Wearslot(wearing[2]);
 inventoryarray.push(slot1,slot2,slot3,slot4,slot5);   
 wearingarray.push(weaponslot,chestslot,ringslot);
 function updatestage(){
-console.log(stage);
 stagedisplay.innerHTML=`Stage: ${stage[0]}-${stage[1]}`
 }
 function updatelevel(){
@@ -1151,6 +1151,7 @@ break;
 } 
 NrPerFloor++;
 const somerandomnumber=generateRandomNumber(1,4);
+console.log(mods.eqmod);
 switch(somerandomnumber){
 case 1:
     bronie.push(new Chestplate());
@@ -1432,16 +1433,12 @@ level=savedstate.levelsaved;
 spendedonhealth=savedstate.spendedonhealth;
 bar.loadlevel();
 updatelevel();
-console.log(savedstate.stage);
 updatestage();
 updatefightstats(gracz,currentMonster)
 //mods.enemymodhp=stage[0]*x
 mods.enemymodhp=stage[1]*12;
 mods.enemymodatak=stage[1]*2;
 mods.eqmod=stage[1]/10
-console.log(mods.eqmod);
-console.log(mods.enemymodatak);
-console.log(mods.enemymodhp);
 }
 else{
 updatefightstats(gracz,currentMonster)    
