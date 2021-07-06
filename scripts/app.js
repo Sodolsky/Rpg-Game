@@ -1,4 +1,4 @@
-//TODO Dodac zapisywanie aktualnej ilosci expa || Dodanie zetonow na skille do sklepu
+//TODO Dodac zapisywanie aktualnej ilosci expa <-Najlepiej zmienic to gowno na jakas libke || Wincyj spelli
 //const { followCursor } = require("tippy.js");
 //const { default: tippy } = require("tippy.js")
 //const Flatted = require("flatted");
@@ -13,6 +13,7 @@ let stage=[1,1];
 let nroffight=1;
 let level=1;
 let freepoints=5;
+let bossloot=false;
 let gold={
 display:document.querySelector('.goldamount'),
 amount:Number(0),
@@ -206,6 +207,7 @@ class Monster {
         }
     }
     wyczyscpobossie(){
+        bossloot=true;
         if(this.hp<=0&&this.bossExist===true){
             stage[1]++;
             for (let i of kulki) {
@@ -1151,7 +1153,7 @@ break;
 } 
 NrPerFloor++;
 const somerandomnumber=generateRandomNumber(1,4);
-console.log(mods.eqmod);
+console.log(bossloot);
 switch(somerandomnumber){
 case 1:
     bronie.push(new Chestplate());
@@ -1169,7 +1171,13 @@ case 4:
 for(let i=0;i<inventoryarray.length;i++){
 if(inventoryarray[i].hasitem===false){
             setURL(inventoryarray[i].slot,bronie[bronie.length-1].icon)
-            bronie[bronie.length-1].wylosujstatystyki(1,100);
+            if(bossloot){
+                bronie[bronie.length-1].wylosujstatystyki(95,100);
+                bossloot=false;
+            }
+            else{
+                bronie[bronie.length-1].wylosujstatystyki(1,100);
+            }
             inventoryarray[i].item=bronie[bronie.length-1];
             inventoryarray[i].item.opis(inventoryarray[i].slot);
             inventoryarray[i].hasitem=true;
