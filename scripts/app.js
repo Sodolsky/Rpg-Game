@@ -19,6 +19,9 @@ amount:Number(0),
 }
 let mods={
     buffmoddmg:1,
+    enemymodhp:1,
+    enemymodatak:1,
+    eqmod:1,
     }
 let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
@@ -180,8 +183,8 @@ class Monster {
     generujnowego(){
         if(this.bossExist===false){
             updatefightstats(gracz,currentMonster)
-            const randatak=generateRandomNumber(8,15)    
-            const randhp=generateRandomNumber(65,100);
+            const randatak=generateRandomNumber(8,15)+mods.enemymodatak;    
+            const randhp=generateRandomNumber(65,100)+mods.enemymodhp;
         this.atak=randatak;
         this.hp=randhp;
         this.dzwiek=this.losujdzwiek();
@@ -192,8 +195,8 @@ class Monster {
     generujbossa(){
         if(nroffight===6){
             this.bossExist=true;
-            const randatak=generateRandomNumber(20,25)    
-            const randhp=generateRandomNumber(200,250);
+            const randatak=generateRandomNumber(20,25)+(mods.enemymodatak*2)    
+            const randhp=generateRandomNumber(200,250)+(mods.enemymodatak*5);
             this.atak=randatak;
             this.hp=randhp;
             updatefightstats(gracz,currentMonster)
@@ -440,28 +443,28 @@ class Miecz {
         this.wylosujstatystyki=function(MIN,MAX){
             this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
-            this.atak = generateRandomNumber(1, 5);
+            this.atak = Math.round(generateRandomNumber(1, 5)*(1+mods.eqmod));
             this.price= generateRandomNumber(11,20);
             this.rarity = "Common";
             this.kolor = "gray";
             this.title = `${tytułymiecz[0][0]} miecz ${tytułymiecz[0][rand]}`;
         }
         else if (this.losowa >= 65 && this.losowa <= 95) {
-            this.atak = generateRandomNumber(6, 9);
+            this.atak = Math.round(generateRandomNumber(6, 9)*(1+mods.eqmod));
             this.price= generateRandomNumber(35,60);
             this.rarity = "Rare";
             this.kolor = "blue";
             this.title = `${tytułymiecz[1][0]} miecz ${tytułymiecz[1][rand]}`;
         }
         else if (this.losowa > 95 && this.losowa < 100) {
-            this.atak = generateRandomNumber(9, 12);
+            this.atak = Math.round(generateRandomNumber(9, 12)*(1+mods.eqmod));
             this.price= generateRandomNumber(120,150);
             this.rarity = "Epic";
             this.kolor = "purple";
             this.title = `${tytułymiecz[2][0]} miecz ${tytułymiecz[2][rand]}`;
         }
         else if (this.losowa === 100) {
-            this.atak = generateRandomNumber(12, 16);
+            this.atak = Math.round(generateRandomNumber(12, 16)*(1+mods.eqmod));
             this.price= generateRandomNumber(300,450);
             this.rarity = "Legendary";
             this.kolor = "orange";
@@ -495,28 +498,28 @@ class Chestplate {
         this.wylosujstatystyki=function(MIN,MAX){
             this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
-            this.hp = generateRandomNumber(5, 30);
+            this.hp = Math.round(generateRandomNumber(5, 30)*(1+mods.eqmod));
             this.price= generateRandomNumber(11,20);
             this.rarity = "Common";
             this.kolor = "gray";
             this.title = `${tytułyzbroja[0][0]} napiersnik ${tytułyzbroja[0][rand]}`;
         }
         else if (this.losowa >= 65 && this.losowa <= 95) {
-            this.hp = generateRandomNumber(31, 55);
+            this.hp = Math.round(generateRandomNumber(31,55)*(1+mods.eqmod));
             this.price= generateRandomNumber(20,35);
             this.rarity = "Rare";
             this.kolor = "blue";
             this.title = `${tytułyzbroja[1][0]} napiersnik ${tytułyzbroja[1][rand]}`;
         }
         else if (this.losowa > 95 && this.losowa < 100) {
-            this.hp = generateRandomNumber(56, 79);
+            this.hp = Math.round(generateRandomNumber(56, 79)*(1+mods.eqmod));
             this.price= generateRandomNumber(120,150);
             this.rarity = "Epic";
             this.kolor = "purple";
             this.title = `${tytułyzbroja[2][0]} napiersnik ${tytułyzbroja[2][rand]}`;
         }
         else if (this.losowa === 100) {
-            this.hp = generateRandomNumber(80, 115);
+            this.hp = Math.round(generateRandomNumber(80, 115)*(1+mods.eqmod));
             this.price= generateRandomNumber(300,450);
             this.rarity = "Legendary";
             this.kolor = "orange";
@@ -550,32 +553,32 @@ class Ring {
         this.wylosujstatystyki=function(MIN,MAX){
         this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
-            this.astrologia = generateRandomNumber(5,15);
-            this.magia = generateRandomNumber(5,15);
+            this.astrologia = Math.round(generateRandomNumber(5, 15)*(1+mods.eqmod));
+            this.magia = Math.round(generateRandomNumber(5, 15)*(1+mods.eqmod));
             this.price= generateRandomNumber(11,20);
             this.rarity = "Common";
             this.kolor = "gray";
             this.title = `${tytułyring[0][0]} pierscien ${tytułyring[0][rand]}`;
         }
         else if (this.losowa >= 65 && this.losowa <= 95) {
-            this.astrologia = generateRandomNumber(15,25);
-            this.magia = generateRandomNumber(15,25);
+            this.astrologia = Math.round(generateRandomNumber(15, 25)*(1+mods.eqmod));
+            this.magia = Math.round(generateRandomNumber(15, 25)*(1+mods.eqmod));
             this.price= generateRandomNumber(35,60);
             this.rarity = "Rare";
             this.kolor = "blue";
             this.title = `${tytułyring[1][0]} pierscien ${tytułyring[1][rand]}`;
         }
         else if (this.losowa > 95 && this.losowa < 100) {
-            this.astrologia = generateRandomNumber(25,40);
-            this.magia = generateRandomNumber(25,40);
+            this.astrologia = Math.round(generateRandomNumber(25, 40)*(1+mods.eqmod));
+            this.magia = Math.round(generateRandomNumber(25, 40)*(1+mods.eqmod));
             this.price= generateRandomNumber(120,150);
             this.rarity = "Epic";
             this.kolor = "purple";
             this.title = `${tytułyring[2][0]} pierscien ${tytułyring[2][rand]}`;
         }
         else if (this.losowa === 100) {
-            this.astrologia = generateRandomNumber(40,55);
-            this.magia = generateRandomNumber(40,55);
+            this.astrologia = Math.round(generateRandomNumber(40, 55)*(1+mods.eqmod));
+            this.magia = Math.round(generateRandomNumber(40, 55)*(1+mods.eqmod));
             this.price= generateRandomNumber(300,450);
             this.rarity = "Legendary";
             this.kolor = "orange";
@@ -601,6 +604,44 @@ class Ring {
         };
     }
     
+}
+class Book{
+    constructor(){
+        this.type='book';
+        this.identyfikator=NrPerFloor;
+        this.icon='img/book.svg';
+        this.price=50;
+        this.wylosujstatystyki=function(MIN,MAX){
+            this.losowa = generateRandomNumber(MIN,MAX);
+            if (this.losowa < 25) {
+                this.whatgives='Atak'
+            }
+            else if (this.losowa >= 25 && this.losowa < 50) {
+                this.whatgives='Health'
+            }
+            else if (this.losowa >=50  && this.losowa < 75) {
+                this.whatgives='Magia'
+            }
+            else if (this.losowa >= 75 && this.losowa <= 100) {
+                this.whatgives='Astrology'
+            }
+        }
+        this.opis = function (parent) {
+            this.nazwa = tippy(parent, {
+                theme: 'informacja',
+                allowHTML: true,
+                content: `
+        Book of knowledge<br>
+        Grants 1 point into: ${this.whatgives}<br>
+        <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span>
+        `,
+            });
+        };
+        this.usunopis = function () {
+            this.nazwa.destroy();
+        };
+        
+    }
 }
 class Eqslot {
     constructor(visualslot, item) {
@@ -714,6 +755,31 @@ class Eqslot {
                             this.equip();
                         }
                         break;
+                    case 'book':
+                        switch (this.item.whatgives) {
+                            case 'Atak':
+                                gracz.atak+=2;
+                                break;
+                            case 'Health':
+                                gracz.hp+=10;
+                                break;
+                            case 'Magia':
+                                gracz.magia+=2;
+                                break;
+                            case 'Astrology':
+                                gracz.astrologia+=2;
+                                break;
+                        }
+                        liczmaxhp();
+                        updatenumbers();
+                        updatefightstats(gracz,currentMonster);
+                        this.item.usunopis();
+                        this.slot.style.backgroundImage='';
+                        delete this.item
+                        this.hasitem=false;
+                        Spell.SpellsArray.forEach(item=>item.RecalculateDmg());
+                        save();
+                        
                 }
             }
         });
@@ -1014,6 +1080,7 @@ let ringslot=new Wearslot(wearing[2]);
 inventoryarray.push(slot1,slot2,slot3,slot4,slot5);   
 wearingarray.push(weaponslot,chestslot,ringslot);
 function updatestage(){
+console.log(stage);
 stagedisplay.innerHTML=`Stage: ${stage[0]}-${stage[1]}`
 }
 function updatelevel(){
@@ -1083,7 +1150,7 @@ break;
 }
 } 
 NrPerFloor++;
-const somerandomnumber=generateRandomNumber(1,3);
+const somerandomnumber=generateRandomNumber(1,4);
 switch(somerandomnumber){
 case 1:
     bronie.push(new Chestplate());
@@ -1093,6 +1160,9 @@ case 2:
     break;
 case 3:
     bronie.push(new Ring());
+    break;
+case 4:
+    bronie.push(new Book())
     break; 
 }
 for(let i=0;i<inventoryarray.length;i++){
@@ -1120,6 +1190,8 @@ save();
 function save(){ // Saves the game
 let save ={
 gold:gold.amount,
+stageprimary:stage[0],
+stagesecondary:stage[1],
 healingpotioncanheal:Healpot.canheal,
 turnsbeforepotion:turnsbeforepotion,
 spendedonhealth:spendedonhealth,
@@ -1130,7 +1202,6 @@ graczastro:gracz.astrologia,
 hp1:gracz.hp,
 hp2:currentMonster.hp,
 levelsaved:level,
-stagesaved:stage,
 basexp:bar.basexp,
 }
 let eq=zapiszeq();
@@ -1196,8 +1267,25 @@ if(savedeq!=undefined){
                     Magia: ${this.magia}<br>
                     <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                     Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
-                    `,})} 
-        }
+                    `,})}
+                    break;
+        case 'book':
+            inventoryarray[i].item.opis = function (parent) {
+                this.nazwa = tippy(parent, {
+                    theme: 'informacja',
+                    allowHTML: true,
+                    content: `
+            Book of knowledge<br>
+            Grants 1 point into: ${this.whatgives}<br>
+            <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span>
+            `,
+                });
+            };
+            this.usunopis = function () {
+                this.nazwa.destroy();
+            };
+                }
+        
             inventoryarray[i].item.usunopis=function(){
                 this.nazwa.destroy();
         }   
@@ -1329,6 +1417,8 @@ Healpot.canheal=savedstate.healingpotioncanheal;
 Healpot.canheal=savedstate.healingpotioncanheal;
 turnsbeforepotion=savedstate.turnsbeforepotion;
 gracz.hp=savedstate.hp1;
+stage[0]=savedstate.stageprimary;
+stage[1]=savedstate.stagesecondary;
 currentMonster.hp=savedstate.hp2;
 bar.basexp=savedstate.basexp;
 gracz.atak=savedstate.graczatak;
@@ -1342,12 +1432,16 @@ level=savedstate.levelsaved;
 spendedonhealth=savedstate.spendedonhealth;
 bar.loadlevel();
 updatelevel();
-if(savedstate.stage!=undefined){
-stage=savedstate.stagesaved;
-updatelevel();
+console.log(savedstate.stage);
 updatestage();
-}
-updatefightstats(gracz,currentMonster)    
+updatefightstats(gracz,currentMonster)
+//mods.enemymodhp=stage[0]*x
+mods.enemymodhp=stage[1]*12;
+mods.enemymodatak=stage[1]*2;
+mods.eqmod=stage[1]/10
+console.log(mods.eqmod);
+console.log(mods.enemymodatak);
+console.log(mods.enemymodhp);
 }
 else{
 updatefightstats(gracz,currentMonster)    
