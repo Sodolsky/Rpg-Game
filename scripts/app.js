@@ -24,7 +24,6 @@ let mods={
     enemymodatak:1,
     eqmod:stage[1]/10,
     }
-console.log('fst');
 let BackArrowCopy;
 const freepointsdisplay=document.querySelector('.wolnepkt');
 const activebuffs=document.querySelector('.activebuffs');
@@ -215,6 +214,8 @@ class Monster {
             i.classList.remove('kolorowekolka');   
             }
             updatestage();
+            mods.enemymodhp=stage[1]*25;
+            mods.enemymodatak=stage[1]*4;
             this.bossExist=false;
             this.generujnowego();
             nroffight=1;
@@ -370,8 +371,38 @@ class Meditation extends Spell{
         }
         }
 }
+class Spark extends Spell {
+    constructor(iconinmodal,cost,minimummagic,castsound){
+        super(iconinmodal,cost,minimummagic,castsound)
+        this.CastCopy=this.Cast.bind(this);
+        Spell.SpellsArray.push(this); // Odloty.pl
+        this.icon.addEventListener('click',this.CastCopy)
+        this.dmg=40+(Math.floor(gracz.magia/2)); // Możliwy refactor
+        document.querySelector('.sparkdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);
+    }
+    Cast(){
+    if(gracz.mana>=this.cost){
+        $('#MagiaModal').modal('hide');
+        this.RecalculateDmg();
+        gracz.mana-=this.cost;
+        ManaLeftDisplay.innerHTML=`${gracz.mana} `;
+        this.CastSound.play();
+        walka(gracz,currentMonster,'magic',this.dmg);
+        setTimeout(function() {
+            walka(gracz,currentMonster,'magic',this.dmg);
+        }, 1000);
+        Buff.BuffsArray.forEach(item=>item.TickBuff());
+    }
+    
+    }
+    RecalculateDmg(){
+    this.dmg=40+(Math.floor(gracz.magia/3));
+    document.querySelector('.sparkdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
+    }
+}
 const kulaognista = new Fireball(document.querySelector('#fireball'),2,5,document.querySelector('#fireboltaudio'));
 const medytacja = new Meditation(document.querySelector('#meditation'),10,10,document.querySelector('#MeditationAudio'))
+const iska = new Spark(document.querySelector('#spark'),25,25,document.querySelector('.Electricsound'))
 kulaognista.Pin();
 function FadeOutandIn(target){
     target.classList.add('hideandshow')
@@ -446,28 +477,28 @@ class Miecz {
         this.wylosujstatystyki=function(MIN,MAX){
             this.losowa = generateRandomNumber(MIN,MAX);
         if (this.losowa < 65) {
-            this.atak = Math.round(generateRandomNumber(1, 5)*(1+mods.eqmod));
+            this.atak = Math.round(generateRandomNumber(3, 8)*(1+mods.eqmod));
             this.price= generateRandomNumber(11,20);
             this.rarity = "Common";
             this.kolor = "gray";
             this.title = `${tytułymiecz[0][0]} miecz ${tytułymiecz[0][rand]}`;
         }
         else if (this.losowa >= 65 && this.losowa <= 95) {
-            this.atak = Math.round(generateRandomNumber(6, 9)*(1+mods.eqmod));
+            this.atak = Math.round(generateRandomNumber(9, 12)*(1+mods.eqmod));
             this.price= generateRandomNumber(35,60);
             this.rarity = "Rare";
             this.kolor = "blue";
             this.title = `${tytułymiecz[1][0]} miecz ${tytułymiecz[1][rand]}`;
         }
         else if (this.losowa > 95 && this.losowa < 100) {
-            this.atak = Math.round(generateRandomNumber(9, 12)*(1+mods.eqmod));
+            this.atak = Math.round(generateRandomNumber(13, 18)*(1+mods.eqmod));
             this.price= generateRandomNumber(120,150);
             this.rarity = "Epic";
             this.kolor = "purple";
             this.title = `${tytułymiecz[2][0]} miecz ${tytułymiecz[2][rand]}`;
         }
         else if (this.losowa === 100) {
-            this.atak = Math.round(generateRandomNumber(12, 16)*(1+mods.eqmod));
+            this.atak = Math.round(generateRandomNumber(20,25)*(1+mods.eqmod));
             this.price= generateRandomNumber(300,450);
             this.rarity = "Legendary";
             this.kolor = "orange";
@@ -859,7 +890,7 @@ class HealingPotion{
         allowHTML: true,
         content: `Healing Potion<br>
         Heals you for 25% of your HP.<br>
-        Can be used every 4 turns.<br>
+        Can be used every 6 turns.<br>
         Turns Left: ${this.usageinfo}
         `,
     });
@@ -868,7 +899,7 @@ class HealingPotion{
     Odswiezinstancje(){
         this.tippyinstance.setContent(`Healing Potion<br>
         Heals you for 25% of your HP.<br>
-        Can be used every 4 turns.<br>
+        Can be used every 6 turns.<br>
         Turns Left: ${this.usageinfo}
         `);     
     }
@@ -885,7 +916,7 @@ class HealingPotion{
     updatenumbers();
     }
     CheckforHeal(){
-    if(turnsbeforepotion===4){
+    if(turnsbeforepotion===6){
     this.usageinfo='Ready to use';
     this.canheal=true;
     this.Odswiezinstancje();
@@ -966,7 +997,7 @@ additems(){
     }
     let inx=this.items.length-1;
     setURL(this.shopslotarray[inx].icon,this.shopslotarray[inx].item.icon)
-    this.shopslotarray[inx].item.wylosujstatystyki(65,100);
+    this.shopslotarray[inx].item.wylosujstatystyki(85,100);
     this.shopslotarray[inx].item.price*=2;
     this.shopslotarray[inx].hasitem=true;
     this.shopslotarray[inx].item.opis(this.shopslotarray[inx].icon)
@@ -1444,8 +1475,8 @@ updatelevel();
 updatestage();
 updatefightstats(gracz,currentMonster)
 //mods.enemymodhp=stage[0]*x
-mods.enemymodhp=stage[1]*12;
-mods.enemymodatak=stage[1]*2;
+mods.enemymodhp=stage[1]*25;
+mods.enemymodatak=stage[1]*4;
 mods.eqmod=stage[1]/10
 }
 else{
