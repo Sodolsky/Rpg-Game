@@ -891,7 +891,7 @@ class HealingPotion{
         content: `Healing Potion<br>
         Heals you for 25% of your HP.<br>
         Can be used every 4 turns.<br>
-        Turns Left: ${this.usageinfo}
+        Turn count: ${this.usageinfo}
         `,
     });
     this.display.addEventListener('click',this.Heal.bind(this),false)
@@ -900,7 +900,7 @@ class HealingPotion{
         this.tippyinstance.setContent(`Healing Potion<br>
         Heals you for 25% of your HP.<br>
         Can be used every 4 turns.<br>
-        Turns Left: ${this.usageinfo}
+        ${this.usageinfo}
         `);     
     }
     Heal(){
@@ -908,7 +908,7 @@ class HealingPotion{
         gracz.hp+=liczmaxhp()*0.25;
         this.canheal=false;
         turnsbeforepotion=0;
-        this.usageinfo=`Turns left: ${turnsbeforepotion}`;
+        this.usageinfo=`Turn count: ${turnsbeforepotion}`;
         this.Odswiezinstancje();
         }
     save();
@@ -925,7 +925,7 @@ class HealingPotion{
         this.Odswiezinstancje();
     }
     else {
-        this.usageinfo=`Turns left: ${turnsbeforepotion}`;
+        this.usageinfo=`Turn count: ${turnsbeforepotion}`;
         this.Odswiezinstancje();    
     } 
     }
