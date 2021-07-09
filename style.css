@@ -477,32 +477,50 @@ width:5vw;
 background-color:inherit;   
 }
 .dol1{
-display:flex;
-justify-content:flex-start;
-flex-direction:column;
-align-items:flex-start; 
+    display: grid; 
+    grid-template-columns: 0.2fr 1.8fr; 
+    grid-template-rows: 1.6fr; 
+    gap: 0px 0px; 
+    grid-template-areas: 
+    "activebuffs fabulanapisy";  
 }
 .activebuffs{
+grid-area: activebuffs;
 display:flex;
 flex-direction:column;
-background-color:var(--eqbackground);
-border:2px solid var(--eqoutline);
 height:100%;
-width:10%;
-margin-bottom:2%;
-margin-top:3%;    
+width:100%;
+margin-top:50%;    
 }
 .buff{
-height:25%;
+height:20%;
 width:100%;
+background-color:var(--eqbackground);
 background-repeat:no-repeat;
 background-size:contain;
 background-position:center;
-border-bottom:4px solid var(--eqoutline);
+border:2px solid var(--eqoutline);
+}
+.fabulanapisy{
+grid-area: fabulanapisy;
+align-self:end;
+display:flex;
+justify-content:center;
+}
+#fabulanapis{
+opacity:0;
+transition:opacity .4s ease-out;
+color:gold;
+word-break:break-word;
+max-width:70%;
+font-size:1.5em;
 }
 @media (max-width:1400px){
 .stats{
 width:60%;    
+}
+h2{
+font-size:1.5em;
 }
 .zmientlo > img{
     width:300px;    

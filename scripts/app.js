@@ -1254,6 +1254,7 @@ if(wearingarray[0].item||wearingarray[1].item||wearingarray[2].item){
 ftimeeq=true;
 localStorage.setItem('ftimeeq',ftimeeq);    
 }
+localStorage.setItem('firstvisit',firstvisit);
 localStorage.setItem('eqsave',Flatted.stringify(eq));
 localStorage.setItem('save',JSON.stringify(save));  
 localStorage.setItem('equbrane',Flatted.stringify(equbrane))  
@@ -1618,7 +1619,36 @@ gold.amount+=rand;
 goldsound2.play();
 gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
 }
-load(); 
+class Dialog{
+        static isactive = false;
+        static display = document.querySelector("#fabulanapis");
+        static PokazNapis(napis,time){
+            time = time+1500 ?? 0;
+            setTimeout(()=>{
+                this.display.innerHTML=napis;
+                this.display.style.opacity=1;
+            },time)
+                    
+    }
+        static UkryjNapis(time){
+            setTimeout(()=>{
+            this.display.style.opacity=0;
+            },time)
+            setTimeout(()=>{
+                this.display.innerHTML='';
+            },(time+1000))
+        }
+}
+let firstvisit=localStorage.getItem('firstvisit') ?? true;
+if(firstvisit==true){
+    Dialog.PokazNapis('*Planujesz Zemste na Piotrku Sodolskim który zabił Korisa Starego idąc jego tropem natrafiasz na dziwną jaskinie w której pachnie grzybami postanawiasz tam wejść i poszukać go. Słyszysz odgłosy małych dzieci*')
+    Dialog.UkryjNapis(8000);
+    Dialog.PokazNapis("? W Grze zdobywaj przedmioty i je zakladaj lewym przyciskiem myszy bądź otwieraj sklep i je sprzedawaj Prawym przyciskiem myszy. Build jest dowolny! Pamiętaj o używaniu mikstury! Celem jest dotarcie do jak nawyższego stage oraz poznanie tajemnicy Piotrka Sodolskiego ?",10000)
+    Dialog.UkryjNapis(25000)
+    firstvisit=false;
+    save();
+}
+load();
 Healpot.CheckforHeal();
 if(gold.amount!=undefined){
 gold.display.innerHTML=`<img src="img/coins.svg" alt="Amount of money">${gold.amount} Yangow`;
