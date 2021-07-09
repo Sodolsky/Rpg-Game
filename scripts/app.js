@@ -890,7 +890,7 @@ class HealingPotion{
         allowHTML: true,
         content: `Healing Potion<br>
         Heals you for 25% of your HP.<br>
-        Can be used every 6 turns.<br>
+        Can be used every 4 turns.<br>
         Turns Left: ${this.usageinfo}
         `,
     });
@@ -899,7 +899,7 @@ class HealingPotion{
     Odswiezinstancje(){
         this.tippyinstance.setContent(`Healing Potion<br>
         Heals you for 25% of your HP.<br>
-        Can be used every 6 turns.<br>
+        Can be used every 4 turns.<br>
         Turns Left: ${this.usageinfo}
         `);     
     }
@@ -916,7 +916,7 @@ class HealingPotion{
     updatenumbers();
     }
     CheckforHeal(){
-    if(turnsbeforepotion===6){
+    if(turnsbeforepotion===4){
     this.usageinfo='Ready to use';
     this.canheal=true;
     this.Odswiezinstancje();
