@@ -134,7 +134,8 @@ class Player {
     setTimeout(function() {
         walka(gracz,currentMonster);
     }, 1000);
-    Buff.BuffsArray.forEach(item=>item.TickBuff());    
+    Buff.BuffsArray.forEach(item=>item.TickBuff());
+    Spell.SpellsArray.forEach(item=>item.RecalculateDmg());    
     }
     }
     AtakMagiczny(){
@@ -277,8 +278,8 @@ class Buff{
             }
             mods.buffmoddmg=medytacja.ownbuff;
             })
-            this.exactspell.iscasted=false;
             Spell.SpellsArray.forEach(item=>item.RecalculateDmg());
+            this.exactspell.iscasted=false;
             this.Usun();
         }
         else{
@@ -302,7 +303,7 @@ class Fireball extends Spell {
         this.CastCopy=this.Cast.bind(this);
         Spell.SpellsArray.push(this); // Odloty.pl
         this.icon.addEventListener('click',this.CastCopy)
-        this.dmg=10+(Math.floor(gracz.magia/2)); // Możliwy refactor
+        this.dmg=10+(Math.floor(gracz.magia/3)); // Możliwy refactor
         document.querySelector('.fireballdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);
     }
     Cast(){
@@ -321,7 +322,7 @@ class Fireball extends Spell {
     
     }
     RecalculateDmg(){
-    this.dmg=10+(Math.floor(gracz.magia/2));
+    this.dmg=10+(Math.floor(gracz.magia/3));
     document.querySelector('.fireballdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
     }
 }
@@ -377,7 +378,7 @@ class Spark extends Spell {
         this.CastCopy=this.Cast.bind(this);
         Spell.SpellsArray.push(this); // Odloty.pl
         this.icon.addEventListener('click',this.CastCopy)
-        this.dmg=40+(Math.floor(gracz.magia/2)); // Możliwy refactor
+        this.dmg=40+(Math.floor(gracz.magia/1)); // Możliwy refactor
         document.querySelector('.sparkdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);
     }
     Cast(){
@@ -396,13 +397,92 @@ class Spark extends Spell {
     
     }
     RecalculateDmg(){
-    this.dmg=40+(Math.floor(gracz.magia/3));
+    this.dmg=40+(Math.floor(gracz.magia/1));
     document.querySelector('.sparkdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
     }
+}
+class Splash extends Spell {
+    constructor(iconinmodal,cost,minimummagic,castsound){
+        super(iconinmodal,cost,minimummagic,castsound)
+        this.CastCopy=this.Cast.bind(this);
+        Spell.SpellsArray.push(this);
+        this.icon.addEventListener('click',this.CastCopy)
+        this.dmg=20+(Math.floor(gracz.magia/2));
+        document.querySelector('.splashdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);
+    }
+    Cast(){
+    if(gracz.mana>=this.cost){
+        $('#MagiaModal').modal('hide');
+        this.RecalculateDmg();
+        gracz.mana-=this.cost;
+        ManaLeftDisplay.innerHTML=`${gracz.mana} `;
+        this.CastSound.play();
+        walka(gracz,currentMonster,'magic',this.dmg);
+        setTimeout(function() {
+            walka(gracz,currentMonster,'magic',this.dmg);
+        }, 1000);
+        Buff.BuffsArray.forEach(item=>item.TickBuff());
+    }
+    
+    }
+    RecalculateDmg(){
+    this.dmg=20+(Math.floor(gracz.magia/2));
+    document.querySelector('.splashdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
+    }
+}
+class Heal extends Spell{
+    constructor(iconinmodal,cost,minimummagic,castsound){
+        super(iconinmodal,cost,minimummagic,castsound)
+        Spell.SpellsArray.push(this);
+        
+        this.CastCopy=this.Cast.bind(this);
+        this.icon.addEventListener('click',this.CastCopy);
+        this.dmg=0;
+        this.img=this.icon.children[0].children[0].children[0].src;
+        this.turns=3;
+        document.querySelector('.MeditationTurns').innerHTML=` ${this.turns-1} `;
+        this.iscasted=false;
+    }
+    Cast(){
+        if(gracz.mana>=this.cost){
+                if(this.iscasted===false){
+            $('#MagiaModal').modal('hide');
+            gracz.mana-=this.cost;
+            ManaLeftDisplay.innerHTML=` ${gracz.mana}`;
+            this.CastSound.play();
+            gracz.hp+=liczmaxhp()*0.5;
+            walka(gracz,currentMonster,'magic',this.dmg);
+            this.AddBuff();
+            Spell.SpellsArray.forEach(item=>item.RecalculateDmg());
+            setTimeout(function() {
+                walka(gracz,currentMonster,'magic',this.dmg);
+            }, 1000); 
+            Buff.BuffsArray.forEach(item=>item.TickBuff());
+        }
+        }
+        }
+        RecalculateDmg(){
+            if(this.iscasted){
+                gracz.hp+=liczmaxhp()*0.1;
+            }
+            this.cost=Math.round(5+(gracz.magia*0.5))
+            document.querySelector('#healcost').innerHTML=this.cost;
+            }
+        AddBuff(){ 
+        for (const i of buffslots) {
+            if(i.style.backgroundImage===''){
+                    this.iscasted=true;
+                    this.currentBuff=new Buff(i,this.turns,'Heals you for 10%',this.img,this)
+                    break;
+            }
+        }
+        }
 }
 const kulaognista = new Fireball(document.querySelector('#fireball'),2,5,document.querySelector('#fireboltaudio'));
 const medytacja = new Meditation(document.querySelector('#meditation'),10,10,document.querySelector('#MeditationAudio'))
 const iska = new Spark(document.querySelector('#spark'),25,25,document.querySelector('.Electricsound'))
+const chlapniecie = new Splash(document.querySelector('#splash'),10,10,document.querySelector('#SplashAudio'));
+const leczenie = new Heal(document.querySelector('#Heal'),5,5,document.querySelector('#HealAudio'));
 kulaognista.Pin();
 function FadeOutandIn(target){
     target.classList.add('hideandshow')

@@ -513,14 +513,14 @@ transition:opacity .4s ease-out;
 color:gold;
 word-break:break-word;
 max-width:70%;
-font-size:1.5em;
+font-size:1.2em;
 }
 @media (max-width:1400px){
 .stats{
 width:60%;    
 }
 h2{
-font-size:1.5em;
+font-size:1em;
 }
 .zmientlo > img{
     width:300px;    
