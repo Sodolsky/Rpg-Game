@@ -400,7 +400,7 @@ class Spark extends Spell {
     this.dmg=40+(Math.floor(gracz.magia/1));
     document.querySelector('.sparkdmg').innerHTML=Math.round(this.dmg*mods.buffmoddmg);  
     }
-}
+} 
 class Splash extends Spell {
     constructor(iconinmodal,cost,minimummagic,castsound){
         super(iconinmodal,cost,minimummagic,castsound)
@@ -552,6 +552,7 @@ class Miecz {
     constructor() {
         let rand = generateRandomNumber(1, 5);
         this.type='sword';
+        this.subtype='sword';
         this.identyfikator = NrPerFloor;
         this.icon = wylosujlootsword();
         this.wylosujstatystyki=function(MIN,MAX){
@@ -601,6 +602,72 @@ class Miecz {
         this.usunopis = function () {
             this.nazwa.destroy();
         };
+    }
+}
+class Staff {
+    constructor() {
+        let rand = generateRandomNumber(1, 5);
+        this.type='sword';
+        this.subtype='staff';
+        this.identyfikator = NrPerFloor;
+        this.icon = this.wylosujlootstaff();
+        this.wylosujstatystyki=function(MIN,MAX){
+            this.losowa = generateRandomNumber(MIN,MAX);
+        if (this.losowa < 65) {
+            this.magia = Math.round(generateRandomNumber(20, 25)*(1+mods.eqmod));
+            this.astrologia = Math.round(generateRandomNumber(20, 25)*(1+mods.eqmod));
+            this.price= generateRandomNumber(11,20);
+            this.rarity = "Common";
+            this.kolor = "gray";
+            this.title = `${tytułymiecz[0][0]} kostur ${tytułymiecz[0][rand]}`;
+        }
+        else if (this.losowa >= 65 && this.losowa <= 95) {
+            this.magia = Math.round(generateRandomNumber(26, 41)*(1+mods.eqmod));
+            this.astrologia = Math.round(generateRandomNumber(26, 41)*(1+mods.eqmod));
+            this.price= generateRandomNumber(35,60);
+            this.rarity = "Rare";
+            this.kolor = "blue";
+            this.title = `${tytułymiecz[1][0]} kostur ${tytułymiecz[1][rand]}`;
+        }
+        else if (this.losowa > 95 && this.losowa < 100) {
+            this.magia = Math.round(generateRandomNumber(42, 65)*(1+mods.eqmod));
+            this.astrologia = Math.round(generateRandomNumber(42, 65)*(1+mods.eqmod));
+            this.price= generateRandomNumber(120,150);
+            this.rarity = "Epic";
+            this.kolor = "purple";
+            this.title = `${tytułymiecz[2][0]} kostur ${tytułymiecz[2][rand]}`;
+        }
+        else if (this.losowa === 100) {
+            this.magia = Math.round(generateRandomNumber(66, 90)*(1+mods.eqmod));
+            this.astrologia = Math.round(generateRandomNumber(66, 90)*(1+mods.eqmod));
+            this.price= generateRandomNumber(300,450);
+            this.rarity = "Legendary";
+            this.kolor = "orange";
+            this.title = `${tytułymiecz[3][0]} kostur ${tytułymiecz[3][rand]}`;
+        }
+    }
+        this.nazwa = this.identyfikator;
+        this.opis = function (parent) {
+            this.nazwa = tippy(parent, {
+                theme: 'informacja',
+                allowHTML: true,
+                content: `
+        ${this.title}<br>
+        Astrologia: ${this.astrologia}<br>
+        Magia: ${this.magia}<br>
+        <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+        Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+        `,
+            });
+        };
+        this.usunopis = function () {
+            this.nazwa.destroy();
+        };
+    }
+    wylosujlootstaff(){
+    const rand = generateRandomNumber(0,2);
+        const arrayoficons = ['staff1.svg','staff2.svg','staff3.svg'];
+        return `img/${arrayoficons[rand]}`;
     }
 }
 class Chestplate {
@@ -773,14 +840,20 @@ class Eqslot {
                     gracz.hp += this.item.hp;
                     break;
                 case 'sword':
-                    gracz.atak += this.item.atak;
+                    if(wearslot.item.subtype==='staff'){
+                        gracz.astrologia += this.item.astrologia;
+                        gracz.magia += this.item.magia;
+                    }
+                    else{
+                        gracz.atak += this.item.atak;
+                    }
                     break;
                 case 'ring':
                     gracz.astrologia += this.item.astrologia;
                     gracz.magia += this.item.magia;
-                    Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
                     break;
             }
+            Spell.SpellsArray.forEach(item=>item.RecalculateDmg())
             updatefightstats(gracz, currentMonster);
             this.item = undefined;
             setURL(wearslot.slot, wearslot.item.icon);
@@ -793,7 +866,13 @@ class Eqslot {
             let placeholder = waeringslot.item;
             switch (waeringslot.item.type) {
                 case 'sword':
-                    gracz.atak -= waeringslot.item.atak;
+                    if(waeringslot.item.subtype==='staff'){
+                        gracz.astrologia -= waeringslot.item.astrologia;
+                        gracz.magia -= waeringslot.item.magia;
+                    }
+                    else{
+                        gracz.atak -= waeringslot.item.atak;
+                    }
                     break;
                 case 'chestplate':
                     gracz.hp -= waeringslot.item.hp;
@@ -809,7 +888,13 @@ class Eqslot {
             waeringslot.item = this.item;
             switch (waeringslot.item.type) {
                 case 'sword':
-                    gracz.atak += waeringslot.item.atak;
+                    if(waeringslot.item.subtype==='staff'){
+                        gracz.astrologia += waeringslot.item.astrologia;
+                        gracz.magia += waeringslot.item.magia;
+                    }
+                    else{
+                        gracz.atak += waeringslot.item.atak;
+                    }
                     break;
                 case 'chestplate':
                     gracz.hp += waeringslot.item.hp;
@@ -936,7 +1021,13 @@ class Wearslot {
                         switch (this.item.type) {
                             case 'sword':
                                 event.target.style.backgroundImage = 'url("img/protest.svg")';
-                                gracz.atak -= this.item.atak;
+                                if(this.item.subtype==='staff'){
+                                    gracz.astrologia -= this.item.astrologia;
+                                    gracz.magia -= this.item.magia;
+                                }
+                                else{
+                                    gracz.atak -= this.item.atak;
+                                }
                                 break;
                             case 'chestplate':
                                 event.target.style.backgroundImage = 'url("img/defaultchest.svg")';
@@ -1063,7 +1154,13 @@ additems(){
     const cointoss=generateRandomNumber(1,3);
     switch (cointoss){
         case 1:
+                const rand = generateRandomNumber(1,2)
+                if(rand===1){
+                this.items.push(new Staff())
+                }
+                else{
                 this.items.push(new Miecz);
+                }
                 this.shopslotarray.push(new Shopslot(i,this.items[this.items.length-1]));
                 break;
         case 2:
@@ -1214,9 +1311,11 @@ Healpot.CheckforHeal();
 if(firstplayer===false){
     switch(type){
         case 'normal':
+        animateValue(SecondHP,currentMonster.hp,Math.round((currentMonster.hp-gracz.atak*mods.buffmoddmg)),200)
         Math.round(u2.hp-=u1.atak*mods.buffmoddmg);
         break;
     case 'magic':
+        animateValue(SecondHP,currentMonster.hp,Math.round((currentMonster.hp-dmg*mods.buffmoddmg)),200)
         Math.round(u2.hp-=dmg*mods.buffmoddmg);
         break;
 }
@@ -1231,6 +1330,7 @@ if(firstplayer===false){
 }
 else{
 currentMonster.dzwiek.play();
+animateValue(FirstHP,u1.hp,u1.hp-u2.atak,200)
 u1.hp=u1.hp-u2.atak;
 red(FirstHP); // Hits 1st target
 updatefightstats(u1,u2)
@@ -1270,7 +1370,13 @@ case 1:
     bronie.push(new Chestplate());
     break
 case 2:
-    bronie.push(new Miecz());
+    const rand = generateRandomNumber(1,2);
+    if(rand===1){
+        bronie.push(new Staff());
+    }
+    else{
+        bronie.push(new Miecz());
+    }
     break;
 case 3:
     bronie.push(new Ring());
@@ -1353,7 +1459,23 @@ if(savedeq!=undefined){
     inventoryarray[i].item=savedeq[i];
     setURL(inventoryarray[i].slot,inventoryarray[i].item.icon);
         switch(inventoryarray[i].item.type){
-        case 'sword':    
+        case 'sword':
+            if(inventoryarray[i].item.subtype==='staff'){
+                inventoryarray[i].item.opis = function (parent) {
+                    this.nazwa = tippy(parent, {
+                        theme: 'informacja',
+                        allowHTML: true,
+                        content: `
+                ${this.title}<br>
+                Astrologia: ${this.astrologia}<br>
+                Magia: ${this.magia}<br>
+                <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                `,
+                    });
+                };
+            } 
+            else{
         inventoryarray[i].item.opis=function(parent){
             this.nazwa=tippy(parent,{ // Tu bedzie bug
                 theme:'informacja',
@@ -1364,6 +1486,7 @@ if(savedeq!=undefined){
                 <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                 Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
                 `,})}
+        }
         break;
         case 'chestplate':
             inventoryarray[i].item.opis=function(parent){
@@ -1433,17 +1556,34 @@ if(savedubrane!=undefined){
         wearingarray[inx].item=savedubrane[i];
         setURL(wearingarray[inx].slot,wearingarray[inx].item.icon);
         switch(wearingarray[inx].item.type){
-            case 'sword':    
-            wearingarray[inx].item.opis=function(parent){
-                this.nazwa=tippy(parent,{ // Tu bedzie bug
-                    theme:'informacja',
-                    allowHTML:true,
-                    content:`
+            case 'sword':
+                if(wearingarray[inx].item.subtype==='staff'){
+                    wearingarray[inx].item.opis = function (parent) {
+                        this.nazwa = tippy(parent, {
+                            theme: 'informacja',
+                            allowHTML: true,
+                            content: `
                     ${this.title}<br>
-                    Atak: ${this.atak}<br>
+                    Astrologia: ${this.astrologia}<br>
+                    Magia: ${this.magia}<br>
                     <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                     Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
-                    `,})}
+                    `,
+                        });
+                    };
+                }
+                else{
+                    wearingarray[inx].item.opis=function(parent){
+                        this.nazwa=tippy(parent,{ // Tu bedzie bug
+                            theme:'informacja',
+                            allowHTML:true,
+                            content:`
+                            ${this.title}<br>
+                            Atak: ${this.atak}<br>
+                            <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                            Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                            `,})}
+                }    
             break;
             case 'chestplate':
                 wearingarray[inx].item.opis=function(parent){
@@ -1471,7 +1611,7 @@ if(savedubrane!=undefined){
                         `,})}
                         break;
             }
-                wearingarray[inx].item.usunopis=function(){
+                wearingarray[inx].item.usunopis=function(){ 
                     this.nazwa.destroy();
             }   
                 updatefightstats(gracz,currentMonster)
@@ -1487,17 +1627,34 @@ savedshop.forEach((item,counter=0)=>{
     setURL(itemicons[counter],item.item.icon)
     shop.shopslotarray[counter].hasitem=true;
     switch(shop.shopslotarray[counter].item.type){
-        case 'sword':    
-        shop.shopslotarray[counter].item.opis=function(parent){
-            this.nazwa=tippy(parent,{ // Tu bedzie bug
-                theme:'informacja',
-                allowHTML:true,
-                content:`
+        case 'sword':
+            if(shop.shopslotarray[counter].item.subtype==='staff'){
+                shop.shopslotarray[counter].item.opis = function (parent) {
+                    this.nazwa = tippy(parent, {
+                        theme: 'informacja',
+                        allowHTML: true,
+                        content: `
                 ${this.title}<br>
-                Atak: ${this.atak}<br>
+                Astrologia: ${this.astrologia}<br>
+                Magia: ${this.magia}<br>
                 <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
                 Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
-                `,})}
+                `,
+                    });
+                };
+            }
+            else{
+                shop.shopslotarray[counter].item.opis=function(parent){
+                    this.nazwa=tippy(parent,{ // Tu bedzie bug
+                        theme:'informacja',
+                        allowHTML:true,
+                        content:`
+                        ${this.title}<br>
+                        Atak: ${this.atak}<br>
+                        <span class='coins'><img src='img/coins.svg'>${this.price} Yangow</span><br>
+                        Rarity: <span style="color:${this.kolor};">${this.rarity}</span>
+                        `,})}
+            }    
         break;
         case 'chestplate':
             shop.shopslotarray[counter].item.opis=function(parent){
@@ -1727,6 +1884,27 @@ if(firstvisit==true){
     Dialog.UkryjNapis(25000)
     firstvisit=false;
     save();
+}
+function animateValue(obiekt, start, end, duration) {
+    if (start === end) return;
+    var range = end - start;
+    var current = start;
+    var increment = end > start? 1 : -1;
+    var stepTime = Math.abs(Math.floor(duration / range));
+    var obj = obiekt;
+    setInterval(function() {
+        if(currentMonster.hp===0){
+            clearInterval(timer);
+            return;
+        }
+    }, 1);
+    var timer = setInterval(function() {
+        current += increment;
+        obj.innerHTML =`HP:${current}`;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
 }
 load();
 Healpot.CheckforHeal();
