@@ -38,7 +38,7 @@ const goldsound2=document.querySelector('.goldsound2');
 let itemicons=document.querySelectorAll('.sklepitem');
 let magia=5;
 let astrologia=5;
-let enemiesarray=new Array()
+let enemiesarray=new Array();
 for(let i=1;i<12;i++){
 if(i>=10){
 enemiesarray.push(`img/enemies/x2 size/${i}.png`)    
@@ -492,20 +492,21 @@ function ProgressBar() {
     this.xp=1000;
     this.basexp=0;
     this.przelicznik=Math.floor(this.xp/100);
-    this.gainedxp=false;
     this.move=function(xp,przelicznik,basexp){
         if (i == 0) {
         i = 1;
         var width;
         width=1;
+        this.gainedxp=false;
         var id = setInterval(frame, 500);
         function frame() {
             if(bar.gainedxp){
             let rand=generateRandomNumber(6,8);
             basexp+=Math.floor(xp/rand);
+            bar.basexp=basexp;
+            save();
             bar.gainedxp=false;    
             }
-
             percentage=Math.floor(basexp/przelicznik);
             width=percentage;
             if (width >= 100) {
@@ -536,11 +537,13 @@ function ProgressBar() {
     this.move(this.xp,this.przelicznik,this.basexp); 
     }
     this.loadlevel=function(){
+    const placeholder = bar.basexp;
     for(let i=1;i<level;i++){
         Math.floor(this.xp=this.xp*1.06);
         this.basexp=1;
         this.przelicznik=Math.floor(this.xp/100); 
     }
+    this.basexp=placeholder;
     this.move(this.xp,this.przelicznik,this.basexp); 
     }
     let timer=setInterval(() => {
@@ -1311,8 +1314,8 @@ Healpot.CheckforHeal();
 if(firstplayer===false){
     switch(type){
         case 'normal':
-        animateValue(SecondHP,currentMonster.hp,Math.round((currentMonster.hp-gracz.atak*mods.buffmoddmg)),200)
-        Math.round(u2.hp-=u1.atak*mods.buffmoddmg);
+            animateValue(SecondHP,currentMonster.hp,Math.round((currentMonster.hp-gracz.atak*mods.buffmoddmg)),200)
+            Math.round(u2.hp-=u1.atak*mods.buffmoddmg);
         break;
     case 'magic':
         animateValue(SecondHP,currentMonster.hp,Math.round((currentMonster.hp-dmg*mods.buffmoddmg)),200)
@@ -1430,6 +1433,7 @@ hp2:currentMonster.hp,
 levelsaved:level,
 basexp:bar.basexp,
 }
+console.log(save.basexp);
 let eq=zapiszeq();
 let equbrane=zapiszubrane();
 if(inventoryarray[0].item!=undefined){
@@ -1708,6 +1712,7 @@ ManaLeftDisplay.innerHTML=`${gracz.mana} `;
 freepoints=savedstate.freepunkty;
 level=savedstate.levelsaved;
 spendedonhealth=savedstate.spendedonhealth;
+console.log(bar.basexp);
 bar.loadlevel();
 updatelevel();
 updatestage();
@@ -1892,16 +1897,10 @@ function animateValue(obiekt, start, end, duration) {
     var increment = end > start? 1 : -1;
     var stepTime = Math.abs(Math.floor(duration / range));
     var obj = obiekt;
-    setInterval(function() {
-        if(currentMonster.hp===0){
-            clearInterval(timer);
-            return;
-        }
-    }, 1);
     var timer = setInterval(function() {
         current += increment;
-        obj.innerHTML =`HP:${current}`;
-        if (current == end) {
+        obj.innerHTML =`HP:${Math.round(current)}`;
+        if (current == end || current===0) {
             clearInterval(timer);
         }
     }, stepTime);
