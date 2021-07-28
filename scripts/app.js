@@ -452,6 +452,7 @@ class Monster {
   wyczyscpobossie() {
     if (this.bosstype === "UFO") {
       if (this.hp <= 0 && this.bossExist === true) {
+        console.log("tu?");
         obrazki.classList.add("FadeOut");
         gracz.atak += Monster.stolendmg;
         animateValue(FirstATK, gracz.atak, gracz.atak + Monster.stolendmg, 500);
@@ -476,9 +477,15 @@ class Monster {
         stage[1]++;
         updatestage();
         mods.RecalculateMods();
-        this.bossExist = false;
+        for (let i of kulki) {
+          i.classList.remove("wypelnione");
+          i.classList.remove("kolorowekolka");
+          this.bossExist = false;
+          nroffight = 1;
+          bossloot = true;
+        }
         this.generujnowego();
-        nroffight = 1;
+        save();
       }
     }
     bossloot = true;
@@ -2235,7 +2242,7 @@ function animateValue(obiekt, start, end, duration) {
   var timer = setInterval(function () {
     current += increment;
     obj.innerHTML = `HP:${Math.round(current)}`;
-    if (current == end || current === 0) {
+    if (current == end || current === 0 || current < 0) {
       clearInterval(timer);
       updatefightstats(gracz, currentMonster);
     }
