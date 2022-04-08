@@ -1395,7 +1395,7 @@ class Eqslot {
                 gracz.atak += 2;
                 break;
               case "Health":
-                gracz.hp += 10;
+                gracz.hp += 15;
                 break;
               case "Magia":
                 gracz.magia += 2;
